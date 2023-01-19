@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: blocky
   annotations:
-    cert-manager.io/issuer: "letsencrypt-stag"
+    cert-manager.io/cluster-issuer: "letsencrypt-stag"
 spec:
   tls:
   - hosts:
