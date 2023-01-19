@@ -11,6 +11,10 @@ spec:
     repoURL: https://kubernetes.github.io/ingress-nginx
     targetRevision: 4.4.2
     chart: ingress-nginx
+    helm:
+      parameters:
+      - name: "controller.ingressClassResource.default"
+        value: "true"
   destination:
     namespace: ingress-nginx
     server: {{ .Values.spec.destination.server }}
