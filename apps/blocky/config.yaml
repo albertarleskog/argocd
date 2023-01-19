@@ -1,0 +1,146 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blocky
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-stag"
+spec:
+  tls:
+  - hosts:
+    - blocky.arleskog.se
+    secretName: blocky-arleskog-se-cert
+  rules:
+  - host: blocky.arleskog.se
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: blocky
+            port:
+              number: 443
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blocky
+spec:
+  selector:
+    app: blocky
+  ports:
+    - port: 443
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: blocky
+  labels:
+    app: blocky
+spec:
+  selector:
+    matchLabels:
+      pod: blocky
+  template:
+    metadata:
+      labels:
+        pod: blocky
+    spec:
+      containers:
+        - image: spx01/blocky:latest
+          name: blocky
+          env:
+            - name: TZ
+              value: "Europe/Stockholm" # Optional to synchronize the log timestamp with host
+          volumeMounts:
+            # Only mount the single file.
+            - mountPath: "/app/config.yml"
+              subPath: config.yml # Same name as in configmap.
+              name: config
+          ports:
+            - containerPort: 53
+            - containerPort: 443
+            - containerPort: 853
+      volumes:
+        - name: config
+          configMap:
+            name: blocky
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: blocky
+data:
+  config.yml: |
+    httpsPort: 443
+    tlsPort: 853
+    upstream:
+      default:
+        - https:r4t7m0942c.cloudflare-gateway.com/dns-query
+        - tcp-tls:r4t7m0942c.cloudflare-gateway.com
+    blocking:
+      blackLists:
+        ads:
+          - https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt #AdGuard DNS filter
+          - https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext #Peter Lowe's List
+          - https://someonewhocares.org/hosts/zero/hosts #Dan Pollock's List
+          - https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV-AGH.txt #Perflyst and Dandelion Sprout's Smart-TV Blocklist
+          - https://abp.oisd.nl/basic/ #OISD Blocklist Basic
+          - https://raw.githubusercontent.com/DandelionSprout/adfilt/master/GameConsoleAdblockList.txt #Game Console Adblock List
+          - https://raw.githubusercontent.com/lassekongo83/Frellwits-filter-lists/master/Frellwits-Swedish-Hosts-File.txt #SWE: Frellwit's Swedish Hosts File
+        malware:
+          - https://raw.githubusercontent.com/mitchellkrogza/The-Big-List-of-Hacked-Malware-Web-Sites/master/hosts #The Big List of Hacked Malware Web Sites
+      clientGroupsBlock:
+        default:
+          - ads
+          - malware
+      processingConcurrency: 10
+    bootstrapDns: tcp+udp:1.1.1.1
+    redis:
+      address: redis-blocky:6379
+      database: 0
+      required: true
+      connectionAttempts: 10
+      connectionCooldown: 5s
+    prometheus:
+      enable: true
+      path: /metrics
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-blocky
+spec:
+  selector:
+    app: redis-blocky
+  ports:
+    - port: 6379
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: redis-blocky
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-blocky
+  template:
+    metadata:
+      name: redis-blocky
+      labels:
+        app: redis-blocky
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            limits:
+              memory: "256Mi"
