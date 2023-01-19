@@ -2,5 +2,5 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   source:
-    repoURL: https://github.com/albertarleskog/k8s
+    repoURL: https://github.com/albertarleskog/argocd
     targetRevision: HEAD

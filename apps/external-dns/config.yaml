@@ -1,0 +1,93 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: external-dns
+  namespace: external-dns
+spec:
+  encryptedData:
+    CF_API_TOKEN: AgAE5SaPP29Kl8c2AaqsCp1NNKk14Y/gUtAAqRIYOog9H775gq3XTPt+DFpwNPrGRXYXT1nvp3s2Apc4WqvKg3Zgl0h41xNz1WPdqtu5ItvXhdn3OLjAJKYu1rQUUfirnPgL73XIfvKJqsDAifITHt4NPUNfY0Oe37INNbRsWoAcTEIgt+J+sRWnxUiPAA3x9MkDrAnDaT2VOUQtHU6IF3o+ZSEecLxbpQNLZIAz5efAJf3tqEeldqHISyOOaYs5l5rtEPRMbEnh0/rYUBK2VH105xOydxtTVntPcp1aYEXsaVFr7ACr9ibv5ZZ9Ghg3MWYISCv1WFYg6a8dOWMwRlQxtJF/viyN48/MIeDrjUaEseTZ63YD52oqfESA5Nmit+w1YVjZMUMAz5XceuChKBph7W8+JQbrQmL6SewbkEYa4q6l0oyfjW4udH7nL19eOHk2eMh4+A3d47VlhNZyH6OFB8OvhKQjAjFVA5suS63+Yh7mtPT8+Hxy1lM/eM8SXVJ5r+v5Vuphqf13YBdGJtgGW33kJwgzEn8TqZRXMPoBuhtsXOYo7RW6kL3CsVrbR0WIAMd2ekLEB8cubcgAjrKj1rDF6YtamHWUyl2BOUjNrSTfhngJd8nyjoG3Zjt+KFQ7OatFvXKHXC6YqmGxjz7F9tVo+QJd9WM7XATolOc+xAQQodKS3HlvgLC8nUaN3woA51SwEccZA3IEuEOZVh86k8R9xQxwu3qfceFOedJ2NXBVbDr7WfSg
+  template:
+    metadata:
+      creationTimestamp: null
+      name: external-dns
+      namespace: external-dns
+    type: Opaque
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+  namespace: external-dns
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-dns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-dns
+subjects:
+- kind: ServiceAccount
+  name: external-dns
+  namespace: external-dns
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-dns
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["networking","networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get","watch","list"]
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+  namespace: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      serviceAccountName: external-dns
+      containers:
+        - name: external-dns
+          image: registry.k8s.io/external-dns/external-dns:v0.13.1
+          args:
+            - --source=ingress
+            - --zone-id-filter=7a7235589c34b71a7a1774c934f7b817 # (optional) limit to a specific zone at cloudflare.
+            - --provider=cloudflare
+            #- --cloudflare-proxied # (optional) enable the proxy feature of Cloudflare (DDOS protection, CDN...)
+            - --registry=txt
+            - --txt-owner-id=public_cluster
+            - --txt-prefix=external-dns_
+            - --fqdn-template={{.Name}}.arleskog.se
+          envFrom:
+            - secretRef:
+                name: external-dns
+                optional: false

@@ -7,14 +7,17 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: https://charts.jetstack.io
-    targetRevision: 1.11.0
-    chart: cert-manager
-    helm:
-      parameters:
-      - name: installCRDs
-        value: "true"
+  sources:
+    - repoURL: https://charts.jetstack.io
+      targetRevision: 1.11.0
+      chart: cert-manager
+      helm:
+        parameters:
+        - name: installCRDs
+          value: "true"
+    - repoURL: {{ .Values.spec.source.repoURL }}
+      path: apps/cert-manager
+      targetRevision: HEAD
   destination:
     namespace: cert-manager
     server: {{ .Values.spec.destination.server }}

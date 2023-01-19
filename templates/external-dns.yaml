@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: {{ .Values.spec.source.repoURL }}
-    path: external-dns
+    path: apps/external-dns
     targetRevision: HEAD
   destination:
     namespace: external-dns

@@ -1,4 +1,3 @@
-# Move into templates on argo v2.6
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
