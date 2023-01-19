@@ -1,0 +1,49 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: libretranslate
+spec:
+  selector:
+    app: libretranslate
+  ports:
+    - port: 80
+      targetPort: 5000
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: libretranslate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: libretranslate
+  template:
+    metadata:
+      name: libretranslate
+      labels:
+        app: libretranslate
+    spec:
+      containers:
+        - name: libretranslate
+          image: libretranslate/libretranslate:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: libretranslate
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: libretranslate
+data:
+  LT_HOST: '0.0.0.0'
+  LT_FRONTEND_LANGUAGE_TARGET: 'sv'
