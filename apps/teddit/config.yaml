@@ -1,0 +1,66 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: teddit
+spec:
+  selector:
+    app: teddit
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: teddit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teddit
+  template:
+    metadata:
+      name: teddit
+      labels:
+        app: teddit
+    spec:
+      containers:
+        - name: teddit
+          image: teddit/teddit
+          envFrom:
+          - configMapRef:
+              name: 'teddit'
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            exec:
+              command:
+                - 'wget'
+                - '--no-verbose'
+                - '--tries=1'
+                - '--spider'
+                - 'http://localhost:8080/about'
+            initialDelaySeconds: 10
+            periodSeconds: 60
+        - name: redis
+          image: redis:6.2.5-alpine
+          command:
+            - 'redis-server'
+          env:
+            - name: REDIS_REPLICATION_MODE
+              value: master
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: teddit
+data:
+  DOMAIN: 'teddit.arleskog.se'
+  USE_HELMET: 'true'
+  USE_HELMET_HSTS: 'true'
+  USE_VIEW_CACHE: 'true'
+  TRUST_PROXY: 'true'
+  THEME: auto
