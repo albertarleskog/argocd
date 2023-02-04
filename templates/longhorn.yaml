@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.longhorn.io
+    targetRevision: 1.4.0
+    chart: longhorn
+    helm:
+      values: |
+        persistence:
+          defaultClassReplicaCount: 2
+          defaultDataLocality: best-effort
+  destination:
+    namespace: longhorn-system
+    server: {{ .Values.spec.destination.server }}
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true
