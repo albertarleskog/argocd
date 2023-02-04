@@ -20,7 +20,12 @@ spec:
             - name: Prometheus
               type: prometheus
               access: proxy
-              url: http://prometheus
+              url: http://prometheus-server
+        persistence:
+          enabled: true
+          size: 5Gi
+        admin:
+          existingSecret: grafana
   destination:
     namespace: monitor
     server: {{ .Values.spec.destination.server }}
@@ -29,3 +34,14 @@ spec:
       prune: true
     syncOptions:
     - CreateNamespace=true
+
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: grafana
+  namespace: monitor
+type: Opaque
+stringData:
+  admin-user: 'admin'
+  admin-password: 'admin'
