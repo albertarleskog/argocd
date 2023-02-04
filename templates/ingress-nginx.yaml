@@ -15,6 +15,12 @@ spec:
       parameters:
       - name: "controller.ingressClassResource.default"
         value: "true"
+      - name: "controller.metrics.enabled"
+        value: "true"
+      - name: "controller.podAnnotations.prometheus.io/scrape"
+        value: "true"
+      - name: "controller.podAnnotations.prometheus.io/port"
+        value: "10254"
   destination:
     namespace: ingress-nginx
     server: {{ .Values.spec.destination.server }}
