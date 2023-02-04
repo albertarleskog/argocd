@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: blocky
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-stag"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   tls:
   - hosts:
@@ -19,7 +19,7 @@ spec:
           service:
             name: blocky
             port:
-              number: 443
+              number: 80
 
 ---
 kind: Service
@@ -30,7 +30,7 @@ spec:
   selector:
     app: blocky
   ports:
-    - port: 443
+    - port: 80
 
 ---
 apiVersion: apps/v1
@@ -42,11 +42,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      pod: blocky
+      app: blocky
   template:
     metadata:
       labels:
-        pod: blocky
+        app: blocky
     spec:
       containers:
         - image: spx01/blocky:latest
@@ -61,7 +61,7 @@ spec:
               name: config
           ports:
             - containerPort: 53
-            - containerPort: 443
+            - containerPort: 80
             - containerPort: 853
       volumes:
         - name: config
@@ -75,7 +75,7 @@ metadata:
   name: blocky
 data:
   config.yml: |
-    httpsPort: 443
+    httpPort: 80
     tlsPort: 853
     upstream:
       default:
@@ -97,14 +97,14 @@ data:
         default:
           - ads
           - malware
-      processingConcurrency: 10
+      processingConcurrency: 5
     bootstrapDns: tcp+udp:1.1.1.1
     redis:
       address: redis-blocky:6379
       database: 0
       required: true
       connectionAttempts: 10
-      connectionCooldown: 5s
+      connectionCooldown: 30s
     prometheus:
       enable: true
       path: /metrics
