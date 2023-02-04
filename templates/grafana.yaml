@@ -15,10 +15,12 @@ spec:
       values: |
         datasources:
           datasources.yaml:
-          - name: Prometheus
-            type: prometheus
-            access: proxy
-            url: http://prometheus
+            apiVersion: 1
+            datasources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus
   destination:
     namespace: monitor
     server: {{ .Values.spec.destination.server }}
