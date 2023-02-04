@@ -1,3 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: translate
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - translate.arleskog.se
+    secretName: libretranslate-arleskog-se-cert
+  rules:
+  - host: translate.arleskog.se
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: libretranslate
+            port:
+              number: 80
+
 ---
 kind: Service
 apiVersion: v1
