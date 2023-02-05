@@ -75,8 +75,6 @@ spec:
         - name: config
           configMap:
             name: searxng
-          # persistentVolumeClaim:
-          #   claimName: searxng
       # Alpine issue in kubernetes
       # https://stackoverflow.com/questions/65181012/does-alpine-have-known-dns-issue-within-kubernetes
       dnsConfig:
