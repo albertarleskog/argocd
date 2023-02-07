@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: 'https://argoproj.github.io/argo-helm'
-    targetRevision: 5.19.15
+    targetRevision: 5.20.0
     chart: argo-cd
     helm:
       values: |
@@ -18,7 +18,7 @@ spec:
             - "--disable-auth"
             - "--insecure"
         dex:
-          enabled: "false"        
+          enabled: "false"
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: argocd

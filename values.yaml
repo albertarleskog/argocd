@@ -1,6 +1,7 @@
-spec:
-  destination:
-    server: https://kubernetes.default.svc
-  source:
-    repoURL: https://github.com/albertarleskog/argocd
-    targetRevision: HEAD
+argo-cd:
+  server:
+    extraArgs:
+      - "--disable-auth"
+      - "--insecure"
+  dex:
+    enabled: "false"
