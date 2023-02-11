@@ -15,7 +15,7 @@ spec:
           ingress:
             enabled: true
             annotations:
-              cert-manager.io/cluster-issuer: "letsencrypt-stag"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
               external-dns.alpha.kubernetes.io/hostname: "vault.arleskog.se"
             hosts:
               - host: vault.arleskog.se
