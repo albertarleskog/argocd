@@ -12,9 +12,12 @@ spec:
       targetRevision: 1.11.0
       chart: cert-manager
       helm:
-        parameters:
-        - name: installCRDs
-          value: "true"
+        values: |
+          installCRDs: true
+          prometheus:
+            enabled: true
+            servicemonitor:
+              enabled: true
     - repoURL: {{ .Values.spec.source.repoURL }}
       path: apps/cert-manager
       targetRevision: HEAD
