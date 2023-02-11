@@ -86,7 +86,6 @@ spec:
             - --registry=txt
             - --txt-owner-id=public_cluster
             - --txt-prefix=external-dns_
-            - --fqdn-template={{.Name}}.arleskog.se
           envFrom:
             - secretRef:
                 name: external-dns

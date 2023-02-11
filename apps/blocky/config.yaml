@@ -4,6 +4,7 @@ metadata:
   name: blocky
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "blocky.arleskog.se"
 spec:
   tls:
   - hosts:

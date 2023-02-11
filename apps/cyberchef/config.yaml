@@ -4,6 +4,7 @@ metadata:
   name: cc
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "cc.arleskog.se"
 spec:
   tls:
   - hosts:

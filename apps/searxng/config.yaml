@@ -4,6 +4,7 @@ metadata:
   name: searxng
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "searxng.arleskog.se"
 spec:
   tls:
   - hosts:
