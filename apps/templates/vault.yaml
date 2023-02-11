@@ -12,6 +12,12 @@ spec:
     helm:
       values: |
         server:
+          affinity: ""
+          ha:
+            replicas: 1
+            enabled: true
+            raft:
+              enabled: true
           ingress:
             enabled: true
             annotations:
