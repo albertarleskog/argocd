@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: public-ipv4
+  namespace: metallb-system
+spec:
+  addresses:
+  - 49.13.3.169/32
