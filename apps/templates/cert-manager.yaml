@@ -14,10 +14,10 @@ spec:
       helm:
         values: |
           installCRDs: true
-          prometheus:
-            enabled: true
-            servicemonitor:
-              enabled: true
+          # prometheus:
+          #   enabled: true
+          #   servicemonitor:
+          #     enabled: true
     - repoURL: {{ .Values.spec.source.repoURL }}
       path: apps/cert-manager
       targetRevision: HEAD
