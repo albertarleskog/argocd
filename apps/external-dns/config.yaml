@@ -58,7 +58,7 @@ spec:
       annotations:
         vault.hashicorp.com/agent-inject: 'true'
         vault.hashicorp.com/role: 'external-dns'
-        vault.hashicorp.com/agent-inject-secret-cloudflare: 'kv/cloudflare'
+        vault.hashicorp.com/agent-inject-secret-cloudflare: 'cloudflare'
         vault.hashicorp.com/agent-inject-template-cloudflare: |
           {{- with secret "kv/cloudflare" -}}
           CF_API_TOKEN={{ .Data.data.token }}
@@ -75,3 +75,7 @@ spec:
             - -c
           args:
             - 'export $(cat /vault/secrets/cloudflare) && external-dns --source=ingress --zone-id-filter=7a7235589c34b71a7a1774c934f7b817 --provider=cloudflare --registry=txt --txt-owner-id=public_cluster --txt-prefix=external-dns_ --interval=30m0s --events'
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
