@@ -12,15 +12,17 @@ spec:
     targetRevision: 4.4.2
     chart: ingress-nginx
     helm:
-      parameters:
-      - name: "controller.ingressClassResource.default"
-        value: "true"
-      - name: "controller.metrics.enabled"
-        value: "true"
-      - name: "controller.podAnnotations.prometheus.io/scrape"
-        value: "true"
-      - name: "controller.podAnnotations.prometheus.io/port"
-        value: "10254"
+      values: |
+        controller:
+          nodeSelector:
+            kubernetes.io/hostname: hetzner-fsn1-cax21-0.arleskog.se
+          ingressClassResource:
+            default: "true"
+          metrics:
+            enabled: "true"
+          podAnnotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "10254"
   destination:
     namespace: ingress-nginx
     server: {{ .Values.spec.destination.server }}

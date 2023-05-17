@@ -1,7 +1,7 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  name: public-ipv4
+  name: hetzner-ipv4
   namespace: metallb-system
 spec:
   addresses:
