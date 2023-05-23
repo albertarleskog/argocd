@@ -1,0 +1,59 @@
+# For more information, see: https://projectcalico.docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.APIServer
+apiVersion: operator.tigera.io/v1
+kind: APIServer
+metadata:
+  name: default
+spec: {}
+
+---
+apiVersion: projectcalico.org/v3
+kind: FelixConfiguration
+metadata:
+  name: default
+spec:
+  bpfEnabled: true
+  bpfL3IfacePattern: "wg.*"
+  bpfLogLevel: ""
+  floatingIPs: Disabled
+  healthPort: 9099
+  logSeverityScreen: Info
+  reportingInterval: 0s
+
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: hetzner-fsn1-cax21-0
+spec:
+  blockSize: 26
+  cidr: 10.69.1.0/24
+  ipipMode: Never
+  natOutgoing: true
+  vxlanMode: Never
+  nodeSelector: kubernetes.io/hostname starts with 'hetzner-fsn1-cax21-0'
+
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: oci-sthlm-a1flex-0
+spec:
+  blockSize: 26
+  cidr: 10.69.2.0/24
+  ipipMode: Never
+  natOutgoing: true
+  vxlanMode: Never
+  nodeSelector: kubernetes.io/hostname starts with 'oci-sthlm-a1flex-0'
+
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: homelab-malilla-kube-0
+spec:
+  blockSize: 26
+  cidr: 10.69.3.0/24
+  ipipMode: Never
+  natOutgoing: true
+  vxlanMode: Never
+  nodeSelector: kubernetes.io/hostname starts with 'homelab-malilla-kube-0'
