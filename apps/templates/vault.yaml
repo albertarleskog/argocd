@@ -31,6 +31,8 @@ spec:
                   - vault.arleskog.se
         ui:
           enabled: true
+        csi:
+          enabled: true
   destination:
     namespace: vault
     server: {{ .Values.spec.destination.server }}
