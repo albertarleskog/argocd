@@ -20,6 +20,12 @@ spec:
           - "--hostname-strict=false"
           - "--hostname-strict-https=false"
           - "--proxy=edge"
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            cpu: "250m"
+            memory: "512Mi"
         ingress:
           enabled: true
           ingressClassName: "nginx"
@@ -55,7 +61,7 @@ spec:
           - name: JAVA_OPTS
             value: >-
               -XX:+UseContainerSupport
-              -XX:MaxRAMPercentage=50.0
+              -XX:MaxRAMPercentage=75.0
               -Djava.net.preferIPv4Stack=true
               -Djava.awt.headless=true
               -Djgroups.dns.query=keycloak-headless
