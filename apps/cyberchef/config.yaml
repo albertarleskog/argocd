@@ -40,7 +40,7 @@ apiVersion: apps/v1
 metadata:
   name: cyberchef
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: cyberchef
@@ -50,8 +50,13 @@ spec:
       labels:
         app: cyberchef
     spec:
+      hostUsers: false
       containers:
         - name: cyberchef
           image: mpepping/cyberchef
           ports:
             - containerPort: 8000
+          resources:
+            limits:
+              cpu: 10m
+              memory: 64Mi
