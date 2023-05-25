@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: keycloak
+  name: keycloakx
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -20,6 +20,7 @@ spec:
           - "--hostname-strict=false"
           - "--hostname-strict-https=false"
           - "--proxy=edge"
+          - "--db-password=$(cat /vault/secrets/keycloak)"
         resources:
           requests:
             memory: "256Mi"
@@ -34,9 +35,9 @@ spec:
             external-dns.alpha.kubernetes.io/hostname: "auth.arleskog.se"
             nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
             nginx.ingress.kubernetes.io/server-snippet: |
-              location ~* /auth/realms/[^/]+/metrics {
-                  return 403;
-              }
+              {{`location ~* /realms/[^/]+/metrics {
+                return 403;
+              }`}}
           # From https://www.keycloak.org/server/reverseproxy
           rules:
             - host: auth.arleskog.se
@@ -53,10 +54,18 @@ spec:
             - hosts:
                 - auth.arleskog.se
               secretName: auth-arleskog-se-cert
+        http:
+          relativePath: "/"
+        podAnnotations:
+          vault.hashicorp.com/agent-inject: 'true'
+          vault.hashicorp.com/role: 'keycloak'
+          vault.hashicorp.com/agent-inject-secret-keycloak: 'keycloak'
+          vault.hashicorp.com/agent-inject-template-keycloak: |
+            {{`{{- with secret "kv/keycloak" -}}
+            {{ .Data.data.db_password }}
+            {{- end -}}`}}
         extraEnv: |
           - name: KEYCLOAK_ADMIN
-            value: admin
-          - name: KEYCLOAK_ADMIN_PASSWORD
             value: admin
           - name: JAVA_OPTS
             value: >-
@@ -65,6 +74,8 @@ spec:
               -Djava.net.preferIPv4Stack=true
               -Djava.awt.headless=true
               -Djgroups.dns.query=keycloak-headless
+        serviceAccount:
+          create: true
         service:
           annotations:
             prometheus.io/scrape: "true"
@@ -74,12 +85,11 @@ spec:
         database:
           vendor: postgres
           username: keycloak
-          password: keycloak
           database: keycloak
           hostname: postgresql.db.svc.cluster.local
           port: 5432
   destination:
-    namespace: keycloak
+    namespace: keycloakx
     server: {{ .Values.spec.destination.server }}
   syncPolicy:
     automated:
