@@ -1,3 +1,9 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: searxng
+
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -35,7 +41,7 @@ spec:
       targetPort: 8080
 
 ---
-kind: StatefulSet
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: searxng
@@ -49,12 +55,26 @@ spec:
       name: searxng
       labels:
         app: searxng
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'searxng'
+        vault.hashicorp.com/agent-inject-secret-secret: 'kv/searxng'
+        vault.hashicorp.com/agent-inject-template-secret: |
+          {{- with secret "kv/searxng" -}}
+          {{ .Data.data.secret }}
+          {{- end -}}
     spec:
+      serviceAccountName: searxng
       containers:
         - name: searxng
           image: searxng/searxng:latest
           ports:
             - containerPort: 8080
+          command:
+            - "/bin/sh"
+            - "-c"
+          args:
+            - "export SEARXNG_SECRET=$(cat /vault/secrets/secret) && /sbin/tini -- /usr/local/searxng/dockerfiles/docker-entrypoint.sh"
           env:
             - name: SEARXNG_BASE_URL
               valueFrom:
@@ -64,6 +84,13 @@ spec:
           volumeMounts:
             - mountPath: "/etc/searxng"
               name: config
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
         - name: redis
           image: redis:alpine
           command:
@@ -72,6 +99,10 @@ spec:
             - ""
             - --appendonly
             - "no"
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
       volumes:
         - name: config
           configMap:
@@ -156,7 +187,7 @@ data:
       # If your instance owns a /etc/searxng/settings.yml file, then set the following
       # values there.
 
-      secret_key: "1yt8Snqcgfhi2Df1pno4MzLG8SbufzDLqo7sru9b4XWg5FJi5N6q8/vBlz1n4wfBzZEHzYZW45uSYQUPW8bPYQ==" 
+      secret_key: "ultrasecretkey" # Is overwritten by ${SEARXNG_SECRET}
       # Proxying image results through searx
       image_proxy: true
       # 1.0 and 1.1 are supported
@@ -743,13 +774,13 @@ data:
         engine: genius
         shortcut: gen
 
-      - name: gigablast
-        engine: gigablast
-        shortcut: gb
-        timeout: 4.0
-        disabled: true
-        additional_tests:
-          rosebud: *test_rosebud
+      # - name: gigablast
+      #   engine: gigablast
+      #   shortcut: gb
+      #   timeout: 4.0
+      #   disabled: true
+      #   additional_tests:
+      #     rosebud: *test_rosebud
 
       - name: gentoo
         engine: gentoo
@@ -847,10 +878,10 @@ data:
         engine: google_scholar
         shortcut: gos
 
-      - name: google play apps
-        engine: google_play_apps
-        shortcut: gpa
-        disabled: true
+      # - name: google play apps
+      #   engine: google_play_apps
+      #   shortcut: gpa
+      #   disabled: true
 
       - name: google play movies
         engine: xpath
@@ -2152,9 +2183,10 @@ data:
     uid = searxng
     gid = searxng
 
-    # Number of workers (usually CPU count)
-    workers = %k
-    threads = 4
+    # Number of workers/processes (usually CPU count).
+    # Reduced since they use a lot of resources.
+    workers = 2
+    threads = 2
 
     # The right granted on the created socket
     chmod-socket = 666
