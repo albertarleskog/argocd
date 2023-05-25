@@ -13,12 +13,28 @@ spec:
     chart: argo-cd
     helm:
       values: |
-        server:
-          extraArgs:
-            - "--disable-auth"
-            - "--insecure"
         dex:
-          enabled: "false"
+          enabled: false
+        server:
+          # certificate:
+          #   enabled: true
+          #   domain: "argocd.arleskog.se"
+          #   issuer:
+          #     kind: "ClusterIssuer"
+          #     name: letsencrypt-stag
+          ingress:
+            enabled: true
+            ingressClassName: "nginx"
+            annotations:
+              nginx.ingress.kubernetes.io/backend-protocol: "https"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              external-dns.alpha.kubernetes.io/hostname: "argocd.arleskog.se"
+            hosts:
+              - "argocd.arleskog.se"
+            tls:
+              - secretName: argocd-arleskog-se-cert
+                hosts:
+                  - argocd.arleskog.se
   destination:
     server: {{ .Values.spec.destination.server }}
     namespace: argocd
