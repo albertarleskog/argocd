@@ -50,6 +50,7 @@ spec:
       labels:
         app: libretranslate
     spec:
+      hostUsers: false
       containers:
         - name: libretranslate
           image: libretranslate/libretranslate:latest

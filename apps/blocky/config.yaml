@@ -49,6 +49,7 @@ spec:
       labels:
         app: blocky
     spec:
+      hostUsers: false
       containers:
         - name: blocky
           image: spx01/blocky:latest
@@ -64,6 +65,10 @@ spec:
             - containerPort: 53
             - containerPort: 80
             - containerPort: 853
+          resources:
+            limits:
+              cpu: 50m
+              memory: 128Mi
         - name: redis
           image: redis:alpine
           ports:

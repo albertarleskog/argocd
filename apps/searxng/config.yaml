@@ -64,6 +64,7 @@ spec:
           {{ .Data.data.secret }}
           {{- end -}}
     spec:
+      hostUsers: false
       serviceAccountName: searxng
       containers:
         - name: searxng
