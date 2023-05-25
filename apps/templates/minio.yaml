@@ -21,7 +21,7 @@ spec:
           enabled: true
           ingressClassName: "nginx"
           annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-stag"
+            cert-manager.io/cluster-issuer: "letsencrypt-prod"
             external-dns.alpha.kubernetes.io/hostname: "minio.arleskog.se"
           hosts:
             - minio.arleskog.se
@@ -33,7 +33,7 @@ spec:
           enabled: true
           ingressClassName: "nginx"
           annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-stag"
+            cert-manager.io/cluster-issuer: "letsencrypt-prod"
             external-dns.alpha.kubernetes.io/hostname: "console.minio.arleskog.se"
           hosts:
             - console.minio.arleskog.se
