@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-operator
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 46.4.1
+    chart: kube-prometheus-stack
+    helm:
+      values: |
+        defaultRules:
+          rules:
+            alertmanager: false
+            kubeProxy: false
+        alertmanager:
+          enabled: false
+        grafana:
+          enabled: false
+        prometheus:
+          service:
+            type: NodePort
+          prometheusSpec:
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: longhorn
+                  accessModes:
+                    - "ReadWriteOnce"
+                  resources:
+                    requests:
+                      storage: 1Gi
+  destination:
+    namespace: monitor
+    server: {{ .Values.spec.destination.server }}
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true # Fix for the too large annotation.
