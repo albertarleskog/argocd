@@ -1,3 +1,4 @@
+# File contains disgusting workaround for handling nested helm templating with multiline strings.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -34,10 +35,9 @@ spec:
             cert-manager.io/cluster-issuer: "letsencrypt-prod"
             external-dns.alpha.kubernetes.io/hostname: "auth.arleskog.se"
             nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-            nginx.ingress.kubernetes.io/server-snippet: |
-              {{`location ~* /realms/[^/]+/metrics {
-                return 403;
-              }`}}
+            {{- with .Values.keycloakx.ingressAnnotations }}
+            nginx.ingress.kubernetes.io/server-snippet: {{ toYaml .serverSnippet | indent 12 }}
+            {{- end }}
           # From https://www.keycloak.org/server/reverseproxy
           rules:
             - host: auth.arleskog.se
@@ -60,10 +60,9 @@ spec:
           vault.hashicorp.com/agent-inject: 'true'
           vault.hashicorp.com/role: 'keycloak'
           vault.hashicorp.com/agent-inject-secret-keycloak: 'keycloak'
-          vault.hashicorp.com/agent-inject-template-keycloak: |
-            {{`{{- with secret "kv/keycloak" -}}
-            {{ .Data.data.db_password }}
-            {{- end -}}`}}
+          {{- with .Values.keycloakx.podAnnotations }}
+          vault.hashicorp.com/agent-inject-template-keycloak: {{ toYaml .agentInjectTemplateKeycloak | indent 10 }}
+          {{- end }}
         extraEnv: |
           - name: KEYCLOAK_ADMIN
             value: admin
