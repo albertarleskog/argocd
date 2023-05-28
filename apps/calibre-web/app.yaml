@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calibre-web-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calibre-web
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "calibre-web.arleskog.se"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - calibre-web.arleskog.se
+      secretName: calibre-web-arleskog-se-cert
+  rules:
+    - host: calibre-web.arleskog.se
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: calibre-web
+              port:
+                number: 443
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: calibre-web
+spec:
+  selector:
+    app: calibre-web
+  ports:
+    - port: 443
+      targetPort: 8083
+
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: calibre-web
+spec:
+  serviceName: calibre-web
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calibre-web
+  template:
+    metadata:
+      name: calibre-web
+      labels:
+        app: calibre-web
+    spec:
+      containers:
+        - name: calibre-web
+          image: lscr.io/linuxserver/calibre-web
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Stockholm"
+            - name: DOCKER_MODS
+              value: "ghcr.io/linuxserver/mods:universal-calibre" # Enable ebook conversion
+          ports:
+            - containerPort: 8083
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: books
+              mountPath: /books
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8083
+              scheme: HTTPS
+            initialDelaySeconds: 180
+            periodSeconds: 60
+      nodeSelector: 
+        kubernetes.io/hostname: homelab-malilla-kube-0.arleskog.se
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: calibre-web-config
+        - name: books
+          nfs:
+            server: "10.1.40.100"
+            path: /mnt/tank/media/books
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
