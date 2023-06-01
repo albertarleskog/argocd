@@ -24,16 +24,6 @@ spec:
         prometheus:
           service:
             type: NodePort
-          prometheusSpec:
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  storageClassName: longhorn
-                  accessModes:
-                    - "ReadWriteOnce"
-                  resources:
-                    requests:
-                      storage: 1Gi
   destination:
     namespace: monitor
     server: {{ .Values.spec.destination.server }}
