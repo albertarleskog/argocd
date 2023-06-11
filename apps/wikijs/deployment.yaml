@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wikijs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wikijs
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'wikijs'
+        vault.hashicorp.com/agent-inject-secret-wikijs: 'wikijs'
+        vault.hashicorp.com/agent-inject-template-wikijs: |
+          {{- with secret "kv/wikijs" -}}
+          {{ .Data.data.db_pass }}
+          {{- end -}}
+      labels:
+        app: wikijs
+    spec:
+      hostUsers: false
+      serviceAccountName: wikijs
+      containers:
+        - name: wikijs
+          image: ghcr.io/requarks/wiki:2
+          env:
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_HOST
+              value: "postgresql.db.svc.cluster.local"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: wikijs
+            - name: DB_NAME
+              value: wikijs
+          command:
+            - "/bin/bash"
+            - "-c"
+          args:
+            - "DB_PASS=$(cat /vault/secrets/wikijs) node server"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 180
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 180
+          startupProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 60
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
