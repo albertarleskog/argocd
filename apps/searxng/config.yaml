@@ -10,14 +10,14 @@ metadata:
   name: searxng
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: "searxng.arleskog.se"
+    external-dns.alpha.kubernetes.io/hostname: "search.arleskog.se"
 spec:
   tls:
   - hosts:
-    - searxng.arleskog.se
-    secretName: searxng-arleskog-se-cert
+    - search.arleskog.se
+    secretName: search-arleskog-se-cert
   rules:
-  - host: searxng.arleskog.se
+  - host: search.arleskog.se
     http:
       paths:
       - path: /
@@ -68,7 +68,7 @@ spec:
       serviceAccountName: searxng
       containers:
         - name: searxng
-          image: searxng/searxng:latest
+          image: searxng/searxng:2023.5.29-c1b5ff7e
           ports:
             - containerPort: 8080
           command:
@@ -121,7 +121,7 @@ apiVersion: v1
 metadata:
   name: searxng
 data:
-  base_url: 'https://searxng.arleskog.se/'
+  base_url: 'https://search.arleskog.se/'
   settings.yml: |
     general:
       # Debug mode, only for development
@@ -153,7 +153,7 @@ data:
       # by default.
       autocomplete: "duckduckgo"
       # minimun characters to type before autocompleter starts
-      autocomplete_min: 3
+      autocomplete_min: 2
       # Default search language - leave blank to detect from browser information or
       # use codes from 'languages.py'
       default_lang: "en"
@@ -327,12 +327,12 @@ data:
 
     # Configuration of the "Hostname replace" plugin:
     #
-    hostname_replace:
+    # hostname_replace:
     #   '(.*\.)?youtube\.com$': 'invidious.example.com'
     #   '(.*\.)?youtu\.be$': 'invidious.example.com'
     #   '(.*\.)?youtube-noocookie\.com$': 'yotter.example.com'
-      '(.*\.)?reddit\.com$': 'teddit.arleskog.se'
-      '(.*\.)?redd\.it$': 'teddit.arleskog.se'
+    # '(.*\.)?reddit\.com$': 'teddit.example.se'
+    # '(.*\.)?redd\.it$': 'teddit.example.se'
     #   '(www\.)?twitter\.com$': 'nitter.example.com'
     #   # to remove matching host names from result list, set value to false
     #   'spam\.example\.com': false
