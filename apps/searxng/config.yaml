@@ -68,7 +68,7 @@ spec:
       serviceAccountName: searxng
       containers:
         - name: searxng
-          image: searxng/searxng:2023.5.29-c1b5ff7e
+          image: searxng/searxng:2023.6.16-71b6ff07
           ports:
             - containerPort: 8080
           command:
@@ -146,55 +146,33 @@ data:
       issue_url: https://github.com/searxng/searxng/issues
 
     search:
-      # Filter results. 0: None, 1: Moderate, 2: Strict
       safe_search: 0
-      # Existing autocomplete backends: "dbpedia", "duckduckgo", "google", "yandex",
-      # "seznam", "startpage", "swisscows", "qwant", "wikipedia" - leave blank to turn it off
-      # by default.
       autocomplete: "duckduckgo"
-      # minimun characters to type before autocompleter starts
       autocomplete_min: 2
-      # Default search language - leave blank to detect from browser information or
-      # use codes from 'languages.py'
-      default_lang: "en"
-      # Available languages
-      # languages:
-      #   - all
-      #   - en
-      #   - en-US
-      #   - de
-      #   - it-IT
-      #   - fr
-      #   - fr-BE
-      # ban time in seconds after engine errors
+      default_lang: "auto"
       ban_time_on_fail: 5
-      # max ban time in seconds after engine errors
       max_ban_time_on_fail: 120
-      # remove format to deny access, use lower case.
-      # formats: [html, csv, json, rss]
       formats:
         - html
-        - csv
         - json
+        - rss
+      suspended_times:
+        SearxEngineAccessDenied: 86400
+        SearxEngineCaptcha: 86400
+        SearxEngineTooManyRequests: 3600
+        cf_SearxEngineCaptcha: 1296000
+        cf_SearxEngineAccessDenied: 86400
+        recaptcha_SearxEngineCaptcha: 604800
 
     server:
-      # If you change port, bind_address or base_url don't forget to rebuild
-      # instance's environment (make buildenv)
       port: 8888
       bind_address: "127.0.0.1"
-      base_url: /  # Possible values: false or "https://example.org/location".
-      limiter: true  # rate limit the number of request on the instance, block some bots
-
-      # If your instance owns a /etc/searxng/settings.yml file, then set the following
-      # values there.
+      base_url: false
+      limiter: true
 
       secret_key: "ultrasecretkey" # Is overwritten by ${SEARXNG_SECRET}
-      # Proxying image results through searx
       image_proxy: true
-      # 1.0 and 1.1 are supported
       http_protocol_version: "1.1"
-      # POST queries are more secure as they don't show up in history but may cause
-      # problems when using Firefox containers
       method: "POST"
       default_http_headers:
         X-Content-Type-Options: nosniff
@@ -204,114 +182,29 @@ data:
         Referrer-Policy: no-referrer
 
     redis:
-      # https://redis-py.readthedocs.io/en/stable/connections.html#redis.client.Redis.from_url
-      #url: false
       url: "redis://@localhost:6379/0"
 
     ui:
-      # Custom static path - leave it blank if you didn't change
       static_path: ""
       static_use_hash: false
-      # Custom templates path - leave it blank if you didn't change
       templates_path: ""
-      # query_in_title: When true, the result page's titles contains the query
-      # it decreases the privacy, since the browser can records the page titles.
-      query_in_title: false
-      # infinite_scroll: When true, automatically loads the next page when scrolling to bottom of the current page.
+      query_in_title: true
       infinite_scroll: true
-      # ui theme
       default_theme: simple
-      # center the results ?
       center_alignment: false
-      # URL prefix of the internet archive, don't forgett trailing slash (if needed).
-      # cache_url: "https://webcache.googleusercontent.com/search?q=cache:"
-      # Default interface locale - leave blank to detect from browser information or
-      # use codes from the 'locales' config section
       default_locale: ""
-      # Open result links in a new tab by default
       results_on_new_tab: true
       theme_args:
-        # style of simple theme: auto, light, dark
         simple_style: auto
 
-    # Lock arbitrary settings on the preferences page.  To find the ID of the user
-    # setting you want to lock, check the ID of the form on the page "preferences".
-    #
-    # preferences:
-    #   lock:
-    #     - language
-    #     - autocomplete
-    #     - method
-    #     - query_in_title
-
-    # searx supports result proxification using an external service:
-    # https://github.com/asciimoo/morty uncomment below section if you have running
-    # morty proxy the key is base64 encoded (keep the !!binary notation)
-    # Note: since commit af77ec3, morty accepts a base64 encoded key.
-    #
-    # result_proxy:
-    #   url: http://127.0.0.1:3000/
-    #   # the key is a base64 encoded string, the YAML !!binary prefix is optional
-    #   key: !!binary "your_morty_proxy_key"
-    #   # [true|false] enable the "proxy" button next to each result
-    #   proxify_results: true
-
-    # communication with search engines
-    #
     outgoing:
-      # default timeout in seconds, can be override by engine
       request_timeout: 3.0
-      # the maximum timeout in seconds
       # max_request_timeout: 10.0
-      # suffix of searx_useragent, could contain information like an email address
-      # to the administrator
       useragent_suffix: ""
-      # The maximum number of concurrent connections that may be established.
       pool_connections: 100
-      # Allow the connection pool to maintain keep-alive connections below this
-      # point.
       pool_maxsize: 20
-      # See https://www.python-httpx.org/http2/
       enable_http2: true
-      # uncomment below section if you want to use a custom server certificate
-      # see https://www.python-httpx.org/advanced/#changing-the-verification-defaults
-      # and https://www.python-httpx.org/compatibility/#ssl-configuration
-      #  verify: ~/.mitmproxy/mitmproxy-ca-cert.cer
-      #
-      # uncomment below section if you want to use a proxyq see: SOCKS proxies
-      #   https://2.python-requests.org/en/latest/user/advanced/#proxies
-      # are also supported: see
-      #   https://2.python-requests.org/en/latest/user/advanced/#socks
-      #
-      #  proxies:
-      #    all://:
-      #      - http://proxy1:8080
-      #      - http://proxy2:8080
-      #
-      #  using_tor_proxy: true
-      #
-      # Extra seconds to add in order to account for the time taken by the proxy
-      #
-      #  extra_proxy_timeout: 10.0
-      #
-      # uncomment below section only if you have more than one network interface
-      # which can be the source of outgoing search requests
-      #
-      #  source_ips:
-      #    - 1.1.1.1
-      #    - 1.1.1.2
-      #    - fe80::/126
 
-    # External plugin configuration, for more details see
-    #   https://docs.searxng.org/dev/plugins.html
-    #
-    # plugins:
-    #   - plugin1
-    #   - plugin2
-    #   - ...
-
-    # Comment or un-comment plugin to activate / deactivate by default.
-    #
     # enabled_plugins:
     #   # these plugins are enabled if nothing is configured ..
     #   - 'Hash plugin'
@@ -324,6 +217,10 @@ data:
     #   - 'Open Access DOI rewrite'
     #   - 'Vim-like hotkeys'
     #   - 'Tor check plugin'
+    #   # Read the docs before activate: auto-detection of the language could be
+    #   # detrimental to users expectations / users can activate the plugin in the
+    #   # preferences if they want.
+    #   - 'Autodetect search language'
 
     # Configuration of the "Hostname replace" plugin:
     #
@@ -454,11 +351,6 @@ data:
         shortcut: arx
         timeout: 4.0
 
-      # tmp suspended:  dh key too small
-      # - name: base
-      #   engine: base
-      #   shortcut: bs
-
       - name: bandcamp
         engine: bandcamp
         shortcut: bc
@@ -477,14 +369,17 @@ data:
       - name: bing images
         engine: bing_images
         shortcut: bii
+        disabled: true
 
       - name: bing news
         engine: bing_news
         shortcut: bin
+        disabled: true
 
       - name: bing videos
         engine: bing_videos
         shortcut: biv
+        disabled: true
 
       - name: bitbucket
         engine: xpath
@@ -609,13 +504,6 @@ data:
         disabled: true
         tests: *tests_infobox
 
-      # cloudflare protected
-      # - name: digbt
-      #   engine: digbt
-      #   shortcut: dbt
-      #   timeout: 6.0
-      #   disabled: true
-
       - name: docker hub
         engine: docker_hub
         shortcut: dh
@@ -670,7 +558,6 @@ data:
         engine: duckduckgo_images
         shortcut: ddi
         timeout: 3.0
-        disabled: true
 
       - name: duckduckgo weather
         engine: duckduckgo_weather
@@ -1518,7 +1405,7 @@ data:
         engine: solidtorrents
         shortcut: solid
         timeout: 4.0
-        disabled: false
+        disabled: true
         base_url:
           - https://solidtorrents.net
           - https://solidtorrents.eu
@@ -1544,20 +1431,6 @@ data:
       #      WHERE title LIKE :wildcard OR description LIKE :wildcard
       #      ORDER BY duration DESC
       #   disabled: false
-
-      # Requires Tor
-      - name: torch
-        engine: xpath
-        paging: true
-        search_url:
-          http://xmh57jrknzkhv6y3ls3ubitzfqnkrwxhopf5aygthi7d6rplyvk3noyd.onion/cgi-bin/omega/omega?P={query}&DEFAULTOP=and
-        results_xpath: //table//tr
-        url_xpath: ./td[2]/a
-        title_xpath: ./td[2]/b
-        content_xpath: ./td[2]/small
-        categories: onions
-        enable_http: true
-        shortcut: tch
 
       # torznab engine lets you query any torznab compatible indexer.  Using this
       # engine in combination with Jackett (https://github.com/Jackett/Jackett)
@@ -1607,6 +1480,7 @@ data:
       - name: yahoo news
         engine: yahoo_news
         shortcut: yhn
+        disabled: true
 
       - name: youtube
         shortcut: yt
@@ -1622,10 +1496,12 @@ data:
       - name: dailymotion
         engine: dailymotion
         shortcut: dm
+        disabled: true
 
       - name: vimeo
         engine: vimeo
         shortcut: vm
+        disabled: true
 
       - name: wiby
         engine: json_engine
@@ -2090,84 +1966,6 @@ data:
           use_official_api: false
           require_api_key: false
           results: HTML
-
-    # Doku engine lets you access to any Doku wiki instance:
-    # A public one or a privete/corporate one.
-    #  - name: ubuntuwiki
-    #    engine: doku
-    #    shortcut: uw
-    #    base_url: 'https://doc.ubuntu-fr.org'
-
-    # Be careful when enabling this engine if you are
-    # running a public instance. Do not expose any sensitive
-    # information. You can restrict access by configuring a list
-    # of access tokens under tokens.
-    #  - name: git grep
-    #    engine: command
-    #    command: ['git', 'grep', '{{QUERY}}']
-    #    shortcut: gg
-    #    tokens: []
-    #    disabled: true
-    #    delimiter:
-    #        chars: ':'
-    #        keys: ['filepath', 'code']
-
-    # Be careful when enabling this engine if you are
-    # running a public instance. Do not expose any sensitive
-    # information. You can restrict access by configuring a list
-    # of access tokens under tokens.
-    #  - name: locate
-    #    engine: command
-    #    command: ['locate', '{{QUERY}}']
-    #    shortcut: loc
-    #    tokens: []
-    #    disabled: true
-    #    delimiter:
-    #        chars: ' '
-    #        keys: ['line']
-
-    # Be careful when enabling this engine if you are
-    # running a public instance. Do not expose any sensitive
-    # information. You can restrict access by configuring a list
-    # of access tokens under tokens.
-    #  - name: find
-    #    engine: command
-    #    command: ['find', '.', '-name', '{{QUERY}}']
-    #    query_type: path
-    #    shortcut: fnd
-    #    tokens: []
-    #    disabled: true
-    #    delimiter:
-    #        chars: ' '
-    #        keys: ['line']
-
-    # Be careful when enabling this engine if you are
-    # running a public instance. Do not expose any sensitive
-    # information. You can restrict access by configuring a list
-    # of access tokens under tokens.
-    #  - name: pattern search in files
-    #    engine: command
-    #    command: ['fgrep', '{{QUERY}}']
-    #    shortcut: fgr
-    #    tokens: []
-    #    disabled: true
-    #    delimiter:
-    #        chars: ' '
-    #        keys: ['line']
-
-    # Be careful when enabling this engine if you are
-    # running a public instance. Do not expose any sensitive
-    # information. You can restrict access by configuring a list
-    # of access tokens under tokens.
-    #  - name: regex search in files
-    #    engine: command
-    #    command: ['grep', '{{QUERY}}']
-    #    shortcut: gr
-    #    tokens: []
-    #    disabled: true
-    #    delimiter:
-    #        chars: ' '
-    #        keys: ['line']
 
     doi_resolvers:
       oadoi.org: 'https://oadoi.org/'
