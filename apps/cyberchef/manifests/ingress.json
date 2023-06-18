@@ -1,0 +1,42 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "cc.arleskog.se"
+      },
+      "name": "cyberchef"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "cc.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "cyberchef",
+                           "port": {
+                              "number": 80
+                           }
+                        }
+                     },
+                     "path": "/",
+                     "pathType": "Prefix"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "cc.arleskog.se"
+            ],
+            "secretName": "cc-arleskog-se-cert"
+         }
+      ]
+   }
+}
