@@ -304,7 +304,6 @@ data:
         engine: apkmirror
         timeout: 4.0
         shortcut: apkm
-        disabled: true
 
       - name: apple app store
         engine: apple_app_store
@@ -616,7 +615,6 @@ data:
       - name: fdroid
         engine: fdroid
         shortcut: fd
-        disabled: true
 
       - name: flickr
         categories: images
@@ -627,6 +625,7 @@ data:
         # api_key: 'apikey' # required!
         # Or you can use the html non-stable engine, activated by default
         engine: flickr_noapi
+        disabled: true
 
       - name: free software directory
         engine: mediawiki
@@ -841,6 +840,7 @@ data:
         page_size: 20
         categories: [it, packages]
         shortcut: ho
+        disabled: true
         about:
           website: https://hoogle.haskell.org/
           wikidata_id: Q34010
@@ -885,7 +885,6 @@ data:
         engine: kickass
         shortcut: kc
         timeout: 4.0
-        disabled: true
 
       - name: library genesis
         engine: xpath
@@ -895,7 +894,6 @@ data:
         content_xpath: //td/a[1][contains(@href,"=author")]/text()
         categories: files
         timeout: 7.0
-        disabled: true
         shortcut: lg
         about:
           website: https://libgen.fun/
@@ -904,20 +902,6 @@ data:
           use_official_api: false
           require_api_key: false
           results: HTML
-
-      # Disabling zlibrary due to z-lib.org domain seizure
-      # https://github.com/searxng/searxng/pull/1937
-      #
-      # - name: z-library
-      #   engine: zlibrary
-      #   shortcut: zlib
-      #   categories: files
-      #   timeout: 3.0
-      #   # choose base_url, otherwise engine will do it at initialization time
-      #   # base_url: https://b-ok.cc
-      #   # base_url: https://de1lib.org
-      #   # base_url: https://booksc.eu   # does not have cover preview
-      #   # base_url: https://booksc.org  # does not have cover preview
 
       - name: library of congress
         engine: loc
@@ -1042,7 +1026,6 @@ data:
         content_query: package/description
         page_size: 25
         categories: [it, packages]
-        disabled: true
         timeout: 5.0
         shortcut: npm
         about:
@@ -1179,6 +1162,7 @@ data:
         # country
         url: https://thepiratebay.org/
         timeout: 3.0
+        disabled: true
 
       # Required dependency: psychopg2
       #  - name: postgresql
@@ -1562,7 +1546,6 @@ data:
         base_url: "https://{language}.wikibooks.org/"
         number_of_results: 5
         search_type: text
-        disabled: true
         about:
           website: https://www.wikibooks.org/
           wikidata_id: Q367
@@ -1657,6 +1640,7 @@ data:
       - name: dictzone
         engine: dictzone
         shortcut: dc
+        disabled: true
 
       - name: mymemory translated
         engine: translated
@@ -1680,7 +1664,6 @@ data:
       - name: 1337x
         engine: 1337x
         shortcut: 1337x
-        disabled: true
 
       - name: duden
         engine: duden
