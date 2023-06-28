@@ -9,13 +9,18 @@ spec:
   project: default
   source:
     repoURL: https://charts.longhorn.io
-    targetRevision: 1.4.0
+    targetRevision: 1.4.2
     chart: longhorn
     helm:
       values: |
-        persistence:
-          defaultClassReplicaCount: 2
+        defaultSettings:
+          backupTarget: "s3://longhorn-private@s3.us-east-005.backblazeb2.com/"
+          backupTargetCredentialSecret: backblaze
+          backupstorePollInterval: 0
+          replicaAutoBalance: best-effort
           defaultDataLocality: best-effort
+          orphanAutoDeletion: true
+          snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: true
   destination:
     namespace: longhorn-system
     server: {{ .Values.spec.destination.server }}
