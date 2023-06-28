@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://helm.releases.hashicorp.com
-    targetRevision: 0.23.0
+    targetRevision: 0.25.0
     chart: vault
     helm:
       values: |
@@ -33,8 +33,6 @@ spec:
             size: 4Gi
             storageClass: longhorn
         ui:
-          enabled: true
-        csi:
           enabled: true
   destination:
     namespace: vault
