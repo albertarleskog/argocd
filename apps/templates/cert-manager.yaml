@@ -4,12 +4,12 @@ metadata:
   name: cert-manager
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   sources:
     - repoURL: https://charts.jetstack.io
-      targetRevision: 1.11.0
+      targetRevision: 1.12.2
       chart: cert-manager
       helm:
         values: |
@@ -18,8 +18,11 @@ spec:
           #   enabled: true
           #   servicemonitor:
           #     enabled: true
+    - repoURL: https://charts.jetstack.io
+      targetRevision: 0.5.0
+      chart: cert-manager-csi-driver
     - repoURL: {{ .Values.spec.source.repoURL }}
-      path: apps/cert-manager
+      path: apps/cert-manager/manifests
       targetRevision: HEAD
   destination:
     namespace: cert-manager
@@ -28,4 +31,4 @@ spec:
     automated:
       prune: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
