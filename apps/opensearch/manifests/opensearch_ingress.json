@@ -1,0 +1,44 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "opensearch.arleskog.se",
+         "nginx.ingress.kubernetes.io/backend-protocol": "HTTPS"
+      },
+      "name": "opensearch",
+      "namespace": "opensearch"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "opensearch.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "opensearch-cluster-headless",
+                           "port": {
+                              "number": 9200
+                           }
+                        }
+                     },
+                     "path": "/",
+                     "pathType": "Prefix"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "opensearch.arleskog.se"
+            ],
+            "secretName": "opensearch-arleskog-se-cert"
+         }
+      ]
+   }
+}
