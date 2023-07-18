@@ -1,0 +1,42 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "git.arleskog.se"
+      },
+      "name": "forgejo"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "git.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "forgejo",
+                           "port": {
+                              "number": 80
+                           }
+                        }
+                     },
+                     "path": "/",
+                     "pathType": "Prefix"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "git.arleskog.se"
+            ],
+            "secretName": "git-arleskog-se-cert"
+         }
+      ]
+   }
+}
