@@ -13,15 +13,16 @@ spec:
     chart: argo-cd
     helm:
       values: |
+        configs:
+          cm:
+            admin.enabled: false
+          rbac:
+            policy.csv: |
+              g, admin, role:admin
+            scopes: "[roles]"
         dex:
           enabled: false
         server:
-          # certificate:
-          #   enabled: true
-          #   domain: "argocd.arleskog.se"
-          #   issuer:
-          #     kind: "ClusterIssuer"
-          #     name: letsencrypt-stag
           ingress:
             enabled: true
             ingressClassName: "nginx"
