@@ -4,12 +4,12 @@ metadata:
   name: blocky
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: {{ .Values.spec.source.repoURL }}
-    path: apps/blocky
+    path: apps/blocky/manifests
     targetRevision: HEAD
   destination:
     namespace: blocky
@@ -18,4 +18,4 @@ spec:
     automated:
       prune: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true

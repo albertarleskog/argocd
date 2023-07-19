@@ -1,0 +1,42 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "dns.arleskog.se"
+      },
+      "name": "blocky"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "dns.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "blocky",
+                           "port": {
+                              "number": 80
+                           }
+                        }
+                     },
+                     "path": "/dns-query",
+                     "pathType": "Exact"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "dns.arleskog.se"
+            ],
+            "secretName": "dns-arleskog-se-cert"
+         }
+      ]
+   }
+}
