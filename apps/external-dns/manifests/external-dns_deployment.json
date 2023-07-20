@@ -1,0 +1,58 @@
+{
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+      "name": "external-dns",
+      "namespace": "external-dns"
+   },
+   "spec": {
+      "selector": {
+         "matchLabels": {
+            "app": "external-dns"
+         }
+      },
+      "strategy": {
+         "type": "Recreate"
+      },
+      "template": {
+         "metadata": {
+            "annotations": {
+               "vault.hashicorp.com/agent-inject": "true",
+               "vault.hashicorp.com/agent-inject-secret-cloudflare": "cloudflare",
+               "vault.hashicorp.com/agent-inject-template-cloudflare": "{{- with secret \"kv/cloudflare\" -}}\nCF_API_TOKEN={{ .Data.data.token }}\n{{- end -}}\n",
+               "vault.hashicorp.com/role": "external-dns"
+            },
+            "labels": {
+               "app": "external-dns"
+            }
+         },
+         "spec": {
+            "containers": [
+               {
+                  "args": [
+                     "export $(cat /vault/secrets/cloudflare) && external-dns --source=ingress --zone-id-filter=7a7235589c34b71a7a1774c934f7b817 --provider=cloudflare --registry=txt --txt-owner-id=public_cluster --txt-prefix=external-dns_ --interval=30m0s --events"
+                  ],
+                  "command": [
+                     "/bin/sh",
+                     "-c"
+                  ],
+                  "image": "registry.k8s.io/external-dns/external-dns:v0.13.5",
+                  "name": "external-dns",
+                  "resources": {
+                     "limits": {
+                        "cpu": "100m",
+                        "memory": "128Mi"
+                     },
+                     "requests": {
+                        "cpu": "100m",
+                        "memory": "128Mi"
+                     }
+                  }
+               }
+            ],
+            "hostUsers": false,
+            "serviceAccountName": "external-dns"
+         }
+      }
+   }
+}
