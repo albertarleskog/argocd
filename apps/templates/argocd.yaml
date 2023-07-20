@@ -9,12 +9,19 @@ spec:
   project: default
   source:
     repoURL: 'https://argoproj.github.io/argo-helm'
-    targetRevision: 5.27.2
+    targetRevision: 5.41.1
     chart: argo-cd
     helm:
       values: |
         configs:
           cm:
+            url: "https://argocd.arleskog.se"
+            oidc.config: |
+              name: Keycloak
+              issuer: https://auth.arleskog.se/realms/default
+              clientID: argocd
+              clientSecret: $oidc.keycloak.clientSecret
+              requestedScopes: ["openid", "profile", "email", "roles"]
             admin.enabled: false
           rbac:
             policy.csv: |
@@ -42,7 +49,6 @@ spec:
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
     syncOptions:
     - CreateNamespace=true
     - Replace=true
