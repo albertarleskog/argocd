@@ -4,7 +4,7 @@ metadata:
   name: tigera-operator
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   sources:
@@ -12,7 +12,7 @@ spec:
       path: apps/tigera-operator/pre
       targetRevision: HEAD
     - repoURL: https://projectcalico.docs.tigera.io/charts
-      targetRevision: 3.25.1
+      targetRevision: 3.26.1
       chart: tigera-operator
       helm:
         values: |
