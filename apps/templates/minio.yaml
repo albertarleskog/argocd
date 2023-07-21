@@ -4,19 +4,20 @@ metadata:
   name: minio
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: https://charts.min.io/
-    targetRevision: 5.0.9
+    targetRevision: 5.0.13
     chart: minio
     helm:
       values: |
-        replicas: 2
+        replicas: 1
+        mode: standalone
         persistence:
           storageClass: "longhorn"
-          size: 5Gi
+          size: 8Gi
         ingress:
           enabled: true
           ingressClassName: "nginx"
