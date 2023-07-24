@@ -14,13 +14,13 @@ function(params) {
     // OS nodes have a name for reference in the cluster and a hostname for internal communication.
     nodes: [
       {
-        name: "%s-%d" % [ne._config.name, i],
-        hostname: "%s.%s.svc.cluster.local" % [ne._config.name, ne._config.namespace]
+        name: "%s-%d" % [ne._config.name, i]
       } for i in std.range(0, ne._config.replicas - 1)
     ],
     clusterName: "%s-cluster" % ne._config.name,
     env: {
       "OPENSEARCH_JAVA_OPTS": "-Xms1g -Xmx1g",
+      "network.publish_host": "${HOSTNAME}.opensearch-cluster-headless.opensearch.svc.cluster.local"
     }
   },
 
@@ -37,10 +37,12 @@ function(params) {
       ||| + |||
         cluster.name: %s
       ||| % ne._config.clusterName + |||
-        network.host: "0.0.0.0"
+        network.host: [ _local_, _site_ ]
+
         plugins.security.ssl.transport.pemcert_filepath: "certs/node.crt"
         plugins.security.ssl.transport.pemkey_filepath: "certs/node.key"
         plugins.security.ssl.transport.pemtrustedcas_filepath: "certs/ca.crt"
+        plugins.security.ssl.transport.resolve_hostname: false # Unable to add ip address to SAN in cert.
         plugins.security.ssl.http.enabled: true
         plugins.security.ssl.http.pemcert_filepath: "certs/node.crt"
         plugins.security.ssl.http.pemkey_filepath: "certs/node.key"
@@ -753,7 +755,7 @@ function(params) {
       namespace: ne._config.namespace
     },
     spec: {
-      serviceName: ne._config.name,
+      serviceName: ne._config.clusterName + "-headless",
       replicas: ne._config.replicas,
       selector: {
         matchLabels: {
@@ -835,15 +837,16 @@ function(params) {
                 volumeAttributes: {
                   "csi.cert-manager.io/issuer-name": ne._config.clusterName,
                   "csi.cert-manager.io/issuer-kind": "Issuer",
-                  "csi.cert-manager.io/common-name": "${POD_NAME}.%s.svc.cluster.local" % ne._config.namespace,
+                  "csi.cert-manager.io/common-name": "${POD_NAME}.%s-headless.%s.svc.cluster.local" % [ne._config.clusterName, ne._config.namespace],
                   "csi.cert-manager.io/duration": "720h",
                   "csi.cert-manager.io/is-ca": "false",
                   "csi.cert-manager.io/key-usages": "server auth,client auth",
-                  "csi.cert-manager.io/dns-names": "${POD_NAME}.%s.svc.cluster.local,%s-headless.%s.svc.cluster.local" % [ne._config.namespace, ne._config.clusterName, ne._config.namespace],
+                  "csi.cert-manager.io/dns-names": "${POD_NAME}.%s-headless.%s.svc.cluster.local,%s-headless.%s.svc.cluster.local" % [ne._config.clusterName, ne._config.namespace, ne._config.clusterName, ne._config.namespace],
                   "csi.cert-manager.io/certificate-file": "node.crt",
                   "csi.cert-manager.io/ca-file": "ca.crt",
                   "csi.cert-manager.io/privatekey-file": "node.key",
-                  "csi.cert-manager.io/fs-group": "1000"
+                  "csi.cert-manager.io/fs-group": "1000",
+                  "csi.cert-manager.io/key-encoding": "PKCS8"
                 }
               }
             },
