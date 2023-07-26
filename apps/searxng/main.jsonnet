@@ -2,7 +2,7 @@ local searxng = import './lib/searxng.libsonnet';
 
 local values = {
   defaults: {
-    version: "2023.6.16-71b6ff07",
+    version: "latest",
     namespace: "default",
     subdomain: "search",
     domain: "arleskog.se"

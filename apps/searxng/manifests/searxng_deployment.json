@@ -41,7 +41,7 @@
                         "value": "https://search.arleskog.se/"
                      }
                   ],
-                  "image": "docker.io/searxng/searxng:2023.6.16-71b6ff07",
+                  "image": "docker.io/searxng/searxng:latest",
                   "name": "searxng",
                   "ports": [
                      {
