@@ -21,15 +21,14 @@ spec:
               linuxDataplane: BPF
               nodeAddressAutodetectionV4:
                 kubernetes: NodeInternalIP
-              # nodeAddressAutodetectionV6:
-              #   kubernetes: NodeInternalIP
-              mtu: 1420
+              mtu: 1390 # Wireguard and VXLAN
               ipPools:
                 - cidr: 10.69.0.0/16
-                  encapsulation: None
+                  encapsulation: VXLAN
+                  disableBGPExport: false
                   blockSize: 26
                   natOutgoing: Enabled
-                  nodeSelector: '!all()'
+                  nodeSelector: all()
     - repoURL: {{ .Values.spec.source.repoURL }}
       path: apps/tigera-operator/post
       targetRevision: HEAD
