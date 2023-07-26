@@ -4,12 +4,12 @@ metadata:
   name: metallb
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   sources:
     - repoURL: https://metallb.github.io/metallb
-      targetRevision: 0.13.7
+      targetRevision: 0.13.10
       chart: metallb
       helm:
         values: |
@@ -25,4 +25,4 @@ spec:
     automated:
       prune: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
