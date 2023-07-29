@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fluent-bit
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://fluent.github.io/helm-charts
+    targetRevision: 0.37.0
+    chart: fluent-bit
+    helm:
+      values: |
+        config:
+          outputs: |
+            [OUTPUT]
+                Name es
+                Match kube.*
+                Host opensearch-cluster-headless.opensearch.svc.cluster.local
+                Logstash_Format On
+                tls On
+                tls.verify Off
+                HTTP_User fluent-bit
+                HTTP_Passwd ${HTTP_PASSWORD}
+                Suppress_Type_Name On
+                Buffer_Size 128KB
+                Trace_Error On
+                Type _doc
+                Replace_Dots On
+            [OUTPUT]
+                Name es
+                Match host.*
+                Host opensearch-cluster-headless.opensearch.svc.cluster.local
+                Logstash_Format On
+                Logstash_Prefix node
+                tls On
+                tls.verify Off
+                HTTP_User fluent-bit
+                HTTP_Passwd ${HTTP_PASSWORD}
+                Suppress_Type_Name On
+                Buffer_Size 128KB
+                Trace_Error On
+                Type _doc
+                Replace_Dots On
+          customParsers: |
+            [PARSER]
+                Name cri
+                Format regex
+                Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<message>.*)$
+                Time_Key    time
+                Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        daemonSetVolumes:
+          - name: varlog
+            hostPath:
+              path: /var/log
+          - name: etcmachineid
+            hostPath:
+              path: /etc/machine-id
+              type: File
+        daemonSetVolumeMounts:
+          - name: varlog
+            mountPath: /var/log
+            readOnly: true
+          - name: etcmachineid
+            mountPath: /etc/machine-id
+            readOnly: true
+        env:
+          - name: HTTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fluent-bit
+                key: HTTP_PASSWORD
+                optional: false
+  destination:
+    namespace: fluent-bit
+    server: {{ .Values.spec.destination.server }}
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
