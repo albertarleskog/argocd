@@ -36,7 +36,7 @@
                         }
                      }
                   ],
-                  "image": "docker.io/opensearchproject/opensearch-dashboards:2.8.0",
+                  "image": "docker.io/opensearchproject/opensearch-dashboards:2.9.0",
                   "name": "opensearch-dashboards",
                   "ports": [
                      {

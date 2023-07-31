@@ -41,7 +41,7 @@
                         }
                      }
                   ],
-                  "image": "docker.io/opensearchproject/opensearch:2.8.0",
+                  "image": "docker.io/opensearchproject/opensearch:2.9.0",
                   "name": "opensearch",
                   "ports": [
                      {
