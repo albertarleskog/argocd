@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpu-operator
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://helm.ngc.nvidia.com/nvidia
+    targetRevision: v23.6.0
+    chart: gpu-operator
+    helm:
+      values: |
+        cdi.enabled: true
+        driver.enabled: false
+  destination:
+    namespace: gpu-operator
+    server: {{ .Values.spec.destination.server }}
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
