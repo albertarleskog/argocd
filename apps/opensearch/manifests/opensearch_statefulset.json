@@ -106,6 +106,9 @@
                   ]
                }
             ],
+            "nodeSelector": {
+               "disktype": "ssd"
+            },
             "securityContext": {
                "fsGroup": 1000
             },

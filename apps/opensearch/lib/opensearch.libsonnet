@@ -463,6 +463,9 @@ function(params) {
           securityContext: {
             fsGroup: 1000
           },
+          nodeSelector: {
+            disktype: "ssd"
+          },
           containers: [
             {
               name: ne._config.name,
