@@ -13,8 +13,13 @@ spec:
     chart: gpu-operator
     helm:
       values: |
-        cdi.enabled: true
-        driver.enabled: false
+        cdi:
+          enabled: true
+          default: false
+        driver:
+          enabled: false
+        toolkit:
+          enabled: true
   destination:
     namespace: gpu-operator
     server: {{ .Values.spec.destination.server }}
