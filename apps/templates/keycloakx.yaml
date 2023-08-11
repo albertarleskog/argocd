@@ -22,6 +22,15 @@ spec:
           - "--hostname-strict-https=false"
           - "--proxy=edge"
           - "--db-password=$(cat /vault/secrets/keycloak)"
+        affinity: |
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - hetzner-fsn1-cax21-0.arleskog.se
         resources:
           requests:
             memory: "256Mi"

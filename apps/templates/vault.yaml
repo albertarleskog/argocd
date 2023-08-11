@@ -12,7 +12,23 @@ spec:
     helm:
       values: |
         server:
-          affinity: ""
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - hetzner-fsn1-cax21-0.arleskog.se
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: "vault"
+                      app.kubernetes.io/instance: "vault"
+                      component: server
+                  topologyKey: kubernetes.io/hostname
           ha:
             replicas: 1
             enabled: true
