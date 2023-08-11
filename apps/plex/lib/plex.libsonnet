@@ -10,7 +10,13 @@ local defaults = {
 };
 
 function(params) {
-  local _config = defaults + params,
+  local _config = defaults + params + {
+    env: {
+      "PLEX_UID": "1000",
+      "PLEX_GID": "1000",
+      "TZ": "Europe/Stockholm"
+    }
+  },
 
   service: {
     kind: "Service",
@@ -25,7 +31,7 @@ function(params) {
       ports: [
         {
           port: 32400,
-          targetPort: 32400,
+          targetPort: "http",
           nodePort: 32400
         }
       ]
@@ -55,20 +61,13 @@ function(params) {
               image: _config.image,
               env: [
                 {
-                  name: "PLEX_UID",
-                  value: "1000"
-                },
-                {
-                  name: "PLEX_GID",
-                  value: "1000"
-                },
-                {
-                  name: "TZ",
-                  value: "Europe/Stockholm"
-                },
+                  name: o.key,
+                  [if std.isString(o.value) then "value" else "valueFrom"]: o.value
+                } for o in std.objectKeysValues(_config.env)
               ],
               ports: [
                 {
+                  name: "http",
                   containerPort: 32400
                 }
               ],

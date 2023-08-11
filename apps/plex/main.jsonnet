@@ -3,7 +3,7 @@ local plex = import './lib/plex.libsonnet';
 local values = {
   plex: {
     name: "plex",
-    image: "plexinc/pms-docker:latest",
+    image: "docker.io/plexinc/pms-docker:latest",
     namespace: "plex",
     replicas: 1
   }
