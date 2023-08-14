@@ -154,7 +154,24 @@ function(params) {
               name: "config",
               configMap: { name: ne._config.name }
             }
-          ]
+          ],
+          affinity: {
+            podAntiAffinity: {
+              preferredDuringSchedulingIgnoredDuringExecution: [
+                {
+                  weight: 100,
+                  podAffinityTerm: {
+                    labelSelector: {
+                      matchExpressions: [
+                        {key: "app", operator: "In", values: [ne._config.name]}
+                      ]
+                    },
+                    topologyKey: "kubernetes.io/hostname"
+                  }
+                }
+              ]
+            }
+          }
         }
       }
     }

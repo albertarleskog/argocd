@@ -20,6 +20,29 @@
             "name": "blocky"
          },
          "spec": {
+            "affinity": {
+               "podAntiAffinity": {
+                  "preferredDuringSchedulingIgnoredDuringExecution": [
+                     {
+                        "podAffinityTerm": {
+                           "labelSelector": {
+                              "matchExpressions": [
+                                 {
+                                    "key": "app",
+                                    "operator": "In",
+                                    "values": [
+                                       "blocky"
+                                    ]
+                                 }
+                              ]
+                           },
+                           "topologyKey": "kubernetes.io/hostname"
+                        },
+                        "weight": 100
+                     }
+                  ]
+               }
+            },
             "containers": [
                {
                   "env": [
