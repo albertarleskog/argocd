@@ -21,6 +21,46 @@
             "name": "opensearch"
          },
          "spec": {
+            "affinity": {
+               "nodeAffinity": {
+                  "requiredDuringSchedulingIgnoredDuringExecution": {
+                     "nodeSelectorTerms": [
+                        {
+                           "matchExpressions": [
+                              {
+                                 "key": "disktype",
+                                 "operator": "In",
+                                 "values": [
+                                    "ssd"
+                                 ]
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               },
+               "podAntiAffinity": {
+                  "preferredDuringSchedulingIgnoredDuringExecution": [
+                     {
+                        "podAffinityTerm": {
+                           "labelSelector": {
+                              "matchExpressions": [
+                                 {
+                                    "key": "app",
+                                    "operator": "In",
+                                    "values": [
+                                       "opensearch"
+                                    ]
+                                 }
+                              ]
+                           },
+                           "topologyKey": "kubernetes.io/hostname"
+                        },
+                        "weight": 100
+                     }
+                  ]
+               }
+            },
             "containers": [
                {
                   "env": [
@@ -106,9 +146,6 @@
                   ]
                }
             ],
-            "nodeSelector": {
-               "disktype": "ssd"
-            },
             "securityContext": {
                "fsGroup": 1000
             },

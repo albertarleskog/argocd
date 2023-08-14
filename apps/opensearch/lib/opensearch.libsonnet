@@ -463,9 +463,6 @@ function(params) {
           securityContext: {
             fsGroup: 1000
           },
-          nodeSelector: {
-            disktype: "ssd"
-          },
           containers: [
             {
               name: ne._config.name,
@@ -566,7 +563,35 @@ function(params) {
               name: "config",
               configMap: { name: ne._config.name + "-config" }
             }
-          ]
+          ],
+          affinity: {
+            nodeAffinity: {
+              requiredDuringSchedulingIgnoredDuringExecution: {
+                nodeSelectorTerms: [
+                  {
+                    matchExpressions: [
+                      {key: "disktype", operator: "In", values: ["ssd"]}  
+                    ]
+                  }
+                ]
+              }
+            },
+            podAntiAffinity: {
+              preferredDuringSchedulingIgnoredDuringExecution: [
+                {
+                  weight: 100,
+                  podAffinityTerm: {
+                    labelSelector: {
+                      matchExpressions: [
+                        {key: "app", operator: "In", values: [ne._config.name]}
+                      ]
+                    },
+                    topologyKey: "kubernetes.io/hostname"
+                  }
+                }
+              ]
+            }
+          }
         }
       },
       volumeClaimTemplates: [
