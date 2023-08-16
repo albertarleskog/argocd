@@ -277,7 +277,7 @@ function(params) {
           - 'Tracker URL remover'
         #   - 'Ahmia blacklist'  # activation depends on outgoing.using_tor_proxy
         #   # these plugins are disabled if nothing is configured ..
-        #   - 'Hostname replace'  # see hostname_replace configuration below
+          - 'Hostname replace'  # see hostname_replace configuration below
         #   - 'Open Access DOI rewrite'
           - 'Vim-like hotkeys'
         #   - 'Tor check plugin'
@@ -288,7 +288,11 @@ function(params) {
 
         # Configuration of the "Hostname replace" plugin:
         #
-        # hostname_replace:
+        hostname_replace:
+          '.*\.pinterest\..+$': false
+          '.*\.quora\.com$': false
+          '.*\.alternativeto\.net$': false
+          '.*\.geeksforgeeks\.org$': false
         #   '(.*\.)?youtube\.com$': 'invidious.example.com'
         #   '(.*\.)?youtu\.be$': 'invidious.example.com'
         #   '(.*\.)?youtube-noocookie\.com$': 'yotter.example.com'
