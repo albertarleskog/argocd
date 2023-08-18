@@ -1,0 +1,144 @@
+{
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet",
+   "metadata": {
+      "name": "jenkins",
+      "namespace": "jenkins"
+   },
+   "spec": {
+      "replicas": 1,
+      "selector": {
+         "matchLabels": {
+            "app": "jenkins"
+         }
+      },
+      "serviceName": "jenkins",
+      "template": {
+         "metadata": {
+            "annotations": {
+               "vault.hashicorp.com/agent-inject": "true",
+               "vault.hashicorp.com/agent-inject-secret-jenkins": "kv/jenkins",
+               "vault.hashicorp.com/agent-inject-template-jenkins": "{{- with secret \"kv/jenkins\" -}}\njenkins:\n  securityRealm:\n    oic:\n      clientSecret: {{ .Data.data.clientSecret }}\n{{- end -}}\n",
+               "vault.hashicorp.com/role": "jenkins"
+            },
+            "labels": {
+               "app": "jenkins"
+            },
+            "name": "jenkins"
+         },
+         "spec": {
+            "containers": [
+               {
+                  "command": [
+                     "/bin/bash",
+                     "-c",
+                     "set -euo pipefail\n\nif [ -r \"$PLUGINS_FILE\" ]; then\n  /bin/jenkins-plugin-cli -f \"$PLUGINS_FILE\" --view-security-warnings\nfi\n\nexec /usr/bin/tini -- /usr/local/bin/jenkins.sh \"$@\"\n"
+                  ],
+                  "env": [
+                     {
+                        "name": "CASC_JENKINS_CONFIG",
+                        "value": "/config/jenkins.yaml,/vault/secrets/jenkins"
+                     },
+                     {
+                        "name": "PLUGINS_FILE",
+                        "value": "/config/plugins.txt"
+                     }
+                  ],
+                  "image": "docker.io/jenkins/jenkins:lts",
+                  "livenessProbe": {
+                     "failureThreshold": 5,
+                     "httpGet": {
+                        "path": "/login",
+                        "port": "http"
+                     },
+                     "periodSeconds": 10,
+                     "timeoutSeconds": 5
+                  },
+                  "name": "jenkins",
+                  "ports": [
+                     {
+                        "containerPort": 8080,
+                        "name": "http"
+                     },
+                     {
+                        "containerPort": 50000,
+                        "name": "jnlp"
+                     }
+                  ],
+                  "readinessProbe": {
+                     "failureThreshold": 3,
+                     "httpGet": {
+                        "path": "/login",
+                        "port": "http"
+                     },
+                     "periodSeconds": 10,
+                     "timeoutSeconds": 5
+                  },
+                  "resources": {
+                     "limits": {
+                        "cpu": "1000m",
+                        "memory": "2Gi"
+                     },
+                     "requests": {
+                        "cpu": "500m",
+                        "memory": "500Mi"
+                     }
+                  },
+                  "securityContext": {
+                     "runAsNonRoot": true
+                  },
+                  "startupProbe": {
+                     "failureThreshold": 24,
+                     "httpGet": {
+                        "path": "/login",
+                        "port": "http"
+                     },
+                     "periodSeconds": 10
+                  },
+                  "volumeMounts": [
+                     {
+                        "mountPath": "/var/jenkins_home",
+                        "name": "data"
+                     },
+                     {
+                        "mountPath": "/config",
+                        "name": "config"
+                     }
+                  ]
+               }
+            ],
+            "securityContext": {
+               "fsGroup": 1000,
+               "runAsUser": 1000
+            },
+            "serviceAccountName": "jenkins",
+            "volumes": [
+               {
+                  "configMap": {
+                     "name": "jenkins"
+                  },
+                  "name": "config"
+               }
+            ]
+         }
+      },
+      "volumeClaimTemplates": [
+         {
+            "metadata": {
+               "name": "data"
+            },
+            "spec": {
+               "accessModes": [
+                  "ReadWriteOnce"
+               ],
+               "resources": {
+                  "requests": {
+                     "storage": "8Gi"
+                  }
+               },
+               "storageClassName": "longhorn"
+            }
+         }
+      ]
+   }
+}

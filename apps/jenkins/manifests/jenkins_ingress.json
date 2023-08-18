@@ -1,0 +1,43 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "jenkins.arleskog.se"
+      },
+      "name": "jenkins",
+      "namespace": "jenkins"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "jenkins.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "jenkins",
+                           "port": {
+                              "number": 80
+                           }
+                        }
+                     },
+                     "path": "/",
+                     "pathType": "Prefix"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "jenkins.arleskog.se"
+            ],
+            "secretName": "jenkins-arleskog-se-cert"
+         }
+      ]
+   }
+}
