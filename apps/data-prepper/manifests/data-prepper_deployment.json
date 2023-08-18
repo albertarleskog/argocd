@@ -1,0 +1,91 @@
+{
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+      "name": "data-prepper",
+      "namespace": "data-prepper"
+   },
+   "spec": {
+      "replicas": 1,
+      "selector": {
+         "matchLabels": {
+            "app": "data-prepper"
+         }
+      },
+      "template": {
+         "metadata": {
+            "annotations": {
+               "vault.hashicorp.com/agent-inject": "true",
+               "vault.hashicorp.com/agent-inject-file-data-prepper": "pipelines.yaml",
+               "vault.hashicorp.com/agent-inject-secret-data-prepper": "kv/data-prepper",
+               "vault.hashicorp.com/agent-inject-template-data-prepper": "{{- with secret \"kv/data-prepper\" -}}\nentry-pipeline:\n  delay: \"100\"\n  source:\n    otel_trace_source:\n      ssl: false\n  sink:\n    - pipeline:\n        name: \"raw-trace-pipeline\"\n    - pipeline:\n        name: \"service-map-pipeline\"\nraw-trace-pipeline:\n  source:\n    pipeline:\n      name: \"entry-pipeline\"\n  processor:\n    - otel_traces:\n  sink:\n    - opensearch:\n        hosts: [\"https://opensearch-cluster-headless.opensearch.svc.cluster.local:9200\"]\n        cert: \"/usr/share/data-prepper/ca.pem\"\n        username: data-prepper\n        password: {{ .Data.data.password }}\n        index_type: trace-analytics-raw\nservice-map-pipeline:\n  delay: \"100\"\n  source:\n    pipeline:\n      name: \"entry-pipeline\"\n  processor:\n    - service_map:\n  sink:\n    - opensearch:\n        hosts: [\"https://opensearch-cluster-headless.opensearch.svc.cluster.local:9200\"]\n        cert: \"/usr/share/data-prepper/ca.pem\"\n        username: data-prepper\n        password: {{ .Data.data.password }}\n        index_type: trace-analytics-service-map\n{{- end -}}\n",
+               "vault.hashicorp.com/role": "data-prepper",
+               "vault.hashicorp.com/secret-volume-path-data-prepper": "/usr/share/data-prepper/pipelines"
+            },
+            "labels": {
+               "app": "data-prepper"
+            }
+         },
+         "spec": {
+            "affinity": {
+               "nodeAffinity": {
+                  "requiredDuringSchedulingIgnoredDuringExecution": {
+                     "nodeSelectorTerms": [
+                        {
+                           "matchExpressions": [
+                              {
+                                 "key": "kubernetes.io/arch",
+                                 "operator": "In",
+                                 "values": [
+                                    "amd64"
+                                 ]
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               }
+            },
+            "containers": [
+               {
+                  "image": "docker.io/opensearchproject/data-prepper:2",
+                  "name": "data-prepper",
+                  "ports": [
+                     {
+                        "containerPort": 21890,
+                        "name": "otlp"
+                     }
+                  ],
+                  "resources": {
+                     "limits": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                     },
+                     "requests": {
+                        "cpu": "100m",
+                        "memory": "256Mi"
+                     }
+                  },
+                  "volumeMounts": [
+                     {
+                        "mountPath": "/usr/share/data-prepper/ca.pem",
+                        "name": "configmap",
+                        "subPath": "ca.pem"
+                     }
+                  ]
+               }
+            ],
+            "hostUsers": false,
+            "serviceAccountName": "data-prepper",
+            "volumes": [
+               {
+                  "configMap": {
+                     "name": "data-prepper"
+                  },
+                  "name": "configmap"
+               }
+            ]
+         }
+      }
+   }
+}
