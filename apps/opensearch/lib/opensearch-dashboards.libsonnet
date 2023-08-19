@@ -38,6 +38,7 @@ function(params) {
         opensearch_security.openid.client_id: "opensearch-dashboards"
         opensearch_security.openid.client_secret: "${OPENSEARCH__SECURITY_OPENID_CLIENT__SECRET}"
         opensearch_security.openid.base_redirect_url: "https://dashboards.arleskog.se/"
+        opensearch_security.openid.refresh_tokens: true
 
         opensearch_security.multitenancy.enabled: true
         opensearch_security.multitenancy.tenants.preferred: [Private, Global]
