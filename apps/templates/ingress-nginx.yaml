@@ -26,6 +26,7 @@ spec:
             prometheus.io/scrape: "true"
             prometheus.io/port: "10254"
           config:
+            ssl-dh-param: "ingress-nginx/lb-dhparam"
             enable-real-ip: true
             proxy-buffer-size: "16k"
             proxy-buffers-number: 8
