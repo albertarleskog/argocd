@@ -9,10 +9,10 @@ spec:
   project: default
   source:
     repoURL: {{ .Values.spec.source.repoURL }}
-    path: apps/calibre-web
+    path: apps/calibre-web/manifests
     targetRevision: HEAD
   destination:
-    namespace: default
+    namespace: calibre-web
     server: {{ .Values.spec.destination.server }}
   syncPolicy:
     automated:

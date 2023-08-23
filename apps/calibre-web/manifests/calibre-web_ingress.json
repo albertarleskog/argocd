@@ -1,0 +1,44 @@
+{
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress",
+   "metadata": {
+      "annotations": {
+         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+         "external-dns.alpha.kubernetes.io/hostname": "calibre-web.arleskog.se",
+         "nginx.ingress.kubernetes.io/backend-protocol": "HTTPS",
+         "nginx.ingress.kubernetes.io/proxy-body-size": "100m"
+      },
+      "name": "calibre-web"
+   },
+   "spec": {
+      "rules": [
+         {
+            "host": "calibre-web.arleskog.se",
+            "http": {
+               "paths": [
+                  {
+                     "backend": {
+                        "service": {
+                           "name": "calibre-web",
+                           "port": {
+                              "number": 443
+                           }
+                        }
+                     },
+                     "path": "/",
+                     "pathType": "Prefix"
+                  }
+               ]
+            }
+         }
+      ],
+      "tls": [
+         {
+            "hosts": [
+               "calibre-web.arleskog.se"
+            ],
+            "secretName": "calibre-web-arleskog-se-cert"
+         }
+      ]
+   }
+}
