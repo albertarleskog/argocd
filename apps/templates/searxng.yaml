@@ -12,7 +12,7 @@ spec:
     path: apps/searxng/manifests
     targetRevision: HEAD
   destination:
-    namespace: default
+    namespace: searxng
     server: {{ .Values.spec.destination.server }}
   syncPolicy:
     automated:

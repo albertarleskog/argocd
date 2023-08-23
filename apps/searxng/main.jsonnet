@@ -3,7 +3,7 @@ local searxng = import './lib/searxng.libsonnet';
 local values = {
   defaults: {
     version: "latest",
-    namespace: "default",
+    namespace: "searxng",
     subdomain: "search",
     domain: "arleskog.se"
   },
@@ -18,3 +18,4 @@ local root = {
 };
 
 { ["searxng_%s.json" % name]: root.searxng[name] for name in std.objectFields(root.searxng) }
+

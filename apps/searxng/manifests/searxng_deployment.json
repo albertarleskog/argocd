@@ -3,7 +3,7 @@
    "kind": "Deployment",
    "metadata": {
       "name": "searxng",
-      "namespace": "default"
+      "namespace": "searxng"
    },
    "spec": {
       "replicas": 1,
@@ -64,23 +64,6 @@
                         "name": "config"
                      }
                   ]
-               },
-               {
-                  "command": [
-                     "redis-server",
-                     "--save",
-                     "",
-                     "--appendonly",
-                     "no"
-                  ],
-                  "image": "redis:alpine",
-                  "name": "redis",
-                  "resources": {
-                     "limits": {
-                        "cpu": "100m",
-                        "memory": "128Mi"
-                     }
-                  }
                }
             ],
             "dnsConfig": {

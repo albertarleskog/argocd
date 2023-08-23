@@ -141,20 +141,6 @@ function(params) {
                 limits: { cpu: "250m", memory: "512Mi" },
                 requests: { cpu: "100m", memory: "256Mi" }
               }
-            },
-            {
-              name: "redis",
-              image: "redis:alpine",
-              command: [
-                "redis-server",
-                "--save",
-                "",
-                "--appendonly",
-                "no"
-              ],
-              resources: {
-                limits: { cpu: "100m", memory: "128Mi" }
-              }
             }
           ],
           volumes: [
@@ -173,6 +159,68 @@ function(params) {
               }
             ]
           }
+        }
+      }
+    }
+  },
+
+  "service-redis": {
+    kind: "Service",
+    apiVersion: "v1",
+    metadata: {
+      name: "redis",
+      namespace: ne._config.namespace
+    },
+    spec: {
+      selector: { app: "redis" },
+      ports: [
+        {
+          port: 6379,
+          targetPort: "redis"
+        }
+      ]
+    }
+  },
+
+  "deployment-redis": {
+    kind: "Deployment",
+    apiVersion: "apps/v1",
+    metadata: {
+      name: "redis",
+      namespace: ne._config.namespace
+    },
+    spec: {
+      replicas: 1,
+      selector: { matchLabels: { app: "redis" }},
+      template: {
+        metadata: {
+          name: "redis",
+          labels: { app: "redis" },
+        },
+        spec: {
+          hostUsers: false,
+          containers: [
+            {
+              name: "redis",
+              image: "redis:alpine",
+              ports: [
+                {
+                  name: "redis",
+                  containerPort: 6379
+                }
+              ],
+              command: [
+                "redis-server",
+                "--save",
+                "",
+                "--appendonly",
+                "no"
+              ],
+              resources: {
+                limits: { cpu: "100m", memory: "128Mi" }
+              }
+            }
+          ]
         }
       }
     }
@@ -246,7 +294,7 @@ function(params) {
             Referrer-Policy: no-referrer
 
         redis:
-          url: "redis://@localhost:6379/0"
+          url: "redis://@redis.searxng.svc.cluster.local:6379/0"
 
         ui:
           static_path: ""
