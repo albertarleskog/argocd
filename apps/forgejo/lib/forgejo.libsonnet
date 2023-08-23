@@ -43,12 +43,28 @@ function(params) {
       FORGEJO__database__PASSWD: {
         secretKeyRef: {
           name: ne._config.name,
-          key: "postgres-passwd"
+          key: "POSTGRES_PASSWD"
         }
       },
       FORGEJO__database__LOG_SQL: "false",
-      // TODO: Opensearch as indexer.
-      FORGEJO__indexer__ISSUE_INDEXER_PATH: "/data/gitea/indexers/issues.bleve",
+      FORGEJO__indexer__ISSUE_INDEXER_TYPE: "elasticsearch",
+      FORGEJO__indexer__ISSUE_INDEXER_CONN_STR: {
+        secretKeyRef: {
+          name: ne._config.name,
+          key: "ISSUE_INDEXER_CONN_STR"
+        }
+      },
+      FORGEJO__indexer__ISSUE_INDEXER_NAME: "forgejo-issues",
+      FROGEJO__indexer__REPO_INDEXER_ENABLED: "true",
+      FROGEJO__indexer__REPO_INDEXER_REPO_TYPES: "sources,forks,templates",
+      FORGEJO__indexer__REPO_INDEXER_TYPE: "elasticsearch",
+      FORGEJO__indexer__REPO_INDEXER_CONN_STR: {
+        secretKeyRef: {
+          name: ne._config.name,
+          key: "REPO_INDEXER_CONN_STR"
+        }
+      },
+      FORGEJO__indexer__REPO_INDEXER_NAME: "forgejo-repos",
       FORGEJO__security__INSTALL_LOCK: "true",
       FORGEJO__security__LOGIN_REMEMBER_DAYS: "1",
       FORGEJO__security__REVERSE_PROXY_TRUSTED_PROXIES: "10.69.0.0/16",
@@ -232,3 +248,4 @@ function(params) {
     }
   }
 }
+

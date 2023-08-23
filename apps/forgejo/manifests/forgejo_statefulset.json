@@ -72,7 +72,7 @@
                         "name": "FORGEJO__database__PASSWD",
                         "valueFrom": {
                            "secretKeyRef": {
-                              "key": "postgres-passwd",
+                              "key": "POSTGRES_PASSWD",
                               "name": "forgejo"
                            }
                         }
@@ -82,8 +82,38 @@
                         "value": "forgejo"
                      },
                      {
-                        "name": "FORGEJO__indexer__ISSUE_INDEXER_PATH",
-                        "value": "/data/gitea/indexers/issues.bleve"
+                        "name": "FORGEJO__indexer__ISSUE_INDEXER_CONN_STR",
+                        "valueFrom": {
+                           "secretKeyRef": {
+                              "key": "ISSUE_INDEXER_CONN_STR",
+                              "name": "forgejo"
+                           }
+                        }
+                     },
+                     {
+                        "name": "FORGEJO__indexer__ISSUE_INDEXER_NAME",
+                        "value": "forgejo-issues"
+                     },
+                     {
+                        "name": "FORGEJO__indexer__ISSUE_INDEXER_TYPE",
+                        "value": "elasticsearch"
+                     },
+                     {
+                        "name": "FORGEJO__indexer__REPO_INDEXER_CONN_STR",
+                        "valueFrom": {
+                           "secretKeyRef": {
+                              "key": "REPO_INDEXER_CONN_STR",
+                              "name": "forgejo"
+                           }
+                        }
+                     },
+                     {
+                        "name": "FORGEJO__indexer__REPO_INDEXER_NAME",
+                        "value": "forgejo-repos"
+                     },
+                     {
+                        "name": "FORGEJO__indexer__REPO_INDEXER_TYPE",
+                        "value": "elasticsearch"
                      },
                      {
                         "name": "FORGEJO__oauth2_client__ACCOUNT_LINKING",
@@ -204,6 +234,14 @@
                      {
                         "name": "FORGEJO__session__PROVIDER",
                         "value": "db"
+                     },
+                     {
+                        "name": "FROGEJO__indexer__REPO_INDEXER_ENABLED",
+                        "value": "true"
+                     },
+                     {
+                        "name": "FROGEJO__indexer__REPO_INDEXER_REPO_TYPES",
+                        "value": "sources,forks,templates"
                      },
                      {
                         "name": "USER_GID",
