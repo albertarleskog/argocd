@@ -168,8 +168,8 @@
                         "value": "/data/gitea"
                      },
                      {
-                        "name": "FORGEJO__server__DISABLE_SSH",
-                        "value": "false"
+                        "name": "FORGEJO__server__BUILTIN_SSH_SERVER_USER",
+                        "value": "git"
                      },
                      {
                         "name": "FORGEJO__server__DOMAIN",
@@ -193,15 +193,15 @@
                      },
                      {
                         "name": "FORGEJO__server__SSH_LISTEN_PORT",
-                        "value": "22"
+                        "value": "32222"
                      },
                      {
                         "name": "FORGEJO__server__SSH_PORT",
-                        "value": "22"
+                        "value": "32222"
                      },
                      {
-                        "name": "FORGEJO__server__SSH_USER",
-                        "value": "git"
+                        "name": "FORGEJO__server__START_SSH_SERVER",
+                        "value": "true"
                      },
                      {
                         "name": "FORGEJO__service__AUTO_WATCH_ON_CHANGES",
@@ -271,7 +271,7 @@
                         "name": "http"
                      },
                      {
-                        "containerPort": 22,
+                        "containerPort": 32222,
                         "name": "ssh"
                      }
                   ],

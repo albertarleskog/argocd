@@ -31,11 +31,11 @@ function(params) {
       FORGEJO__server__DOMAIN: ne._config.fqdn,
       FORGEJO__server__ROOT_URL: "https://" + ne._config.fqdn,
       FORGEJO__server__HTTP_PORT: "3000",
-      FORGEJO__server__DISABLE_SSH: "false",
+      FORGEJO__server__START_SSH_SERVER: "true",
+      FORGEJO__server__BUILTIN_SSH_SERVER_USER: "git",
       FORGEJO__server__SSH_DOMAIN: ne._config.fqdn, // Displayed in clone URL.
-      FORGEJO__server__SSH_PORT: "22", // Displayed in clone URL.
-      FORGEJO__server__SSH_USER: "git", // Displayed in clone URL.
-      FORGEJO__server__SSH_LISTEN_PORT: "22",
+      FORGEJO__server__SSH_PORT: "32222", // Displayed in clone URL.
+      FORGEJO__server__SSH_LISTEN_PORT: "32222",
       FORGEJO__database__DB_TYPE: "postgres",
       FORGEJO__database__HOST: "postgresql.db.svc.cluster.local:5432",
       FORGEJO__database__NAME: "forgejo",
@@ -138,6 +138,28 @@ function(params) {
     }
   },
 
+  "service-ssh": {
+    kind: "Service",
+    apiVersion: "v1",
+    metadata: {
+      name: ne._config.name + "-ssh",
+      namespace: ne._config.namespace
+    },
+    spec: {
+      type: "NodePort",
+      selector: {
+        app: ne._config.name
+      },
+      ports: [
+        {
+          port: 32222,
+          targetPort: "ssh",
+          nodePort: 32222
+        }
+      ]
+    }
+  },
+
   service: {
     kind: "Service",
     apiVersion: "v1",
@@ -195,7 +217,7 @@ function(params) {
                   name: "http"
                 },
                 {
-                  containerPort: 22,
+                  containerPort: 32222,
                   name: "ssh"
                 }
               ],
