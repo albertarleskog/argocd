@@ -77,7 +77,7 @@ function(params) {
       FORGEJO__service__ENABLE_TIMETRACKING: "false",
       FORGEJO__service__AUTO_WATCH_ON_CHANGES: "true",
       FORGEJO__service__VALID_SITE_URL_SCHEMES: "https",
-      # TODO: Memcache/redis for cache.
+      FORGEJO__service__ENABLE_BASIC_AUTHENTICATION: "false",
       FORGEJO__session__PROVIDER: "db",
       FORGEJO__session__COOKIE_SECURE: "true",
       FORGEJO__session__DOMAIN: "git.arleskog.se",
@@ -90,7 +90,6 @@ function(params) {
       # TODO: Enable when stable.
       # FORGEJO__federation__ENABLED: "true",
       # FORGEJO__federation__SHARE_USER_STATISTICS: "false"
-      # TODO: Use Minio for storage.
       FORGEJO__attachment__PATH: "/data/gitea/attachments",
     }
   },
