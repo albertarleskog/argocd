@@ -13,8 +13,7 @@ local defaults = {
 };
 
 function(params) {
-  local ne = self,
-  _config:: defaults + params + {
+  local _config = defaults + params + {
     env: {
       USER_UID: "1000",
       USER_GID: "1000",
@@ -24,16 +23,16 @@ function(params) {
       FORGEJO__repository__DEFAULT_REPO_UNITS: "repo.code,repo.releases",
       FORGEJO__cors__ENABLED: "true",
       FORGEJO__cors__SCHEME: "https",
-      FORGEJO__cors__ALLOW_DOMAIN: "*." + ne._config.domain,
+      FORGEJO__cors__ALLOW_DOMAIN: "*." + _config.domain,
       FORGEJO__cors__ALLOW_SUBDOMAIN: "true",
       FORGEJO__server__APP_DATA_PATH: "/data/gitea",
       FORGEJO__server__PROTOCOL: "http",
-      FORGEJO__server__DOMAIN: ne._config.fqdn,
-      FORGEJO__server__ROOT_URL: "https://" + ne._config.fqdn,
+      FORGEJO__server__DOMAIN: _config.fqdn,
+      FORGEJO__server__ROOT_URL: "https://" + _config.fqdn,
       FORGEJO__server__HTTP_PORT: "3000",
       FORGEJO__server__START_SSH_SERVER: "true",
       FORGEJO__server__BUILTIN_SSH_SERVER_USER: "git",
-      FORGEJO__server__SSH_DOMAIN: ne._config.fqdn, // Displayed in clone URL.
+      FORGEJO__server__SSH_DOMAIN: _config.fqdn, // Displayed in clone URL.
       FORGEJO__server__SSH_PORT: "32222", // Displayed in clone URL.
       FORGEJO__server__SSH_LISTEN_PORT: "32222",
       FORGEJO__database__DB_TYPE: "postgres",
@@ -42,7 +41,7 @@ function(params) {
       FORGEJO__database__USER: "forgejo",
       FORGEJO__database__PASSWD: {
         secretKeyRef: {
-          name: ne._config.name,
+          name: _config.name,
           key: "POSTGRES_PASSWD"
         }
       },
@@ -50,7 +49,7 @@ function(params) {
       FORGEJO__indexer__ISSUE_INDEXER_TYPE: "elasticsearch",
       FORGEJO__indexer__ISSUE_INDEXER_CONN_STR: {
         secretKeyRef: {
-          name: ne._config.name,
+          name: _config.name,
           key: "ISSUE_INDEXER_CONN_STR"
         }
       },
@@ -60,7 +59,7 @@ function(params) {
       FORGEJO__indexer__REPO_INDEXER_TYPE: "elasticsearch",
       FORGEJO__indexer__REPO_INDEXER_CONN_STR: {
         secretKeyRef: {
-          name: ne._config.name,
+          name: _config.name,
           key: "REPO_INDEXER_CONN_STR"
         }
       },
@@ -98,24 +97,24 @@ function(params) {
     apiVersion: "networking.k8s.io/v1",
     kind: "Ingress",
     metadata: {
-      name: ne._config.name,
+      name: _config.name,
       annotations: {
         "cert-manager.io/cluster-issuer": "letsencrypt-prod",
-        "external-dns.alpha.kubernetes.io/hostname": ne._config.fqdn
+        "external-dns.alpha.kubernetes.io/hostname": _config.fqdn
       }
     },
     spec: {
       tls: [
         {
           hosts: [
-            ne._config.fqdn
+            _config.fqdn
           ],
-          secretName: std.strReplace(ne._config.fqdn, ".", "-") + "-cert"
+          secretName: std.strReplace(_config.fqdn, ".", "-") + "-cert"
         }
       ],
       rules: [
         {
-          host: ne._config.fqdn,
+          host: _config.fqdn,
           http: {
             paths: [
               {
@@ -123,7 +122,7 @@ function(params) {
                 pathType: "Prefix",
                 backend: {
                   service: {
-                    name: ne._config.name,
+                    name: _config.name,
                     port: {
                       number: 80
                     }
@@ -141,13 +140,13 @@ function(params) {
     kind: "Service",
     apiVersion: "v1",
     metadata: {
-      name: ne._config.name + "-ssh",
-      namespace: ne._config.namespace
+      name: _config.name + "-ssh",
+      namespace: _config.namespace
     },
     spec: {
       type: "NodePort",
       selector: {
-        app: ne._config.name
+        app: _config.name
       },
       ports: [
         {
@@ -163,12 +162,12 @@ function(params) {
     kind: "Service",
     apiVersion: "v1",
     metadata: {
-      name: ne._config.name,
-      namespace: ne._config.namespace
+      name: _config.name,
+      namespace: _config.namespace
     },
     spec: {
       selector: {
-        app: ne._config.name
+        app: _config.name
       },
       ports: [
         {
@@ -183,22 +182,22 @@ function(params) {
     kind: "StatefulSet",
     apiVersion: "apps/v1",
     metadata: {
-      name: ne._config.name,
-      namespace: ne._config.namespace
+      name: _config.name,
+      namespace: _config.namespace
     },
     spec: {
-      serviceName: ne._config.name,
+      serviceName: _config.name,
       replicas: 1,
       selector: {
         matchLabels: {
-          app: ne._config.name
+          app: _config.name
         }
       },
       template: {
         metadata: {
-          name: ne._config.name,
+          name: _config.name,
           labels: {
-            app: ne._config.name
+            app: _config.name
           }
         },
         spec: {
@@ -208,8 +207,8 @@ function(params) {
           },
           containers: [
             {
-              name: ne._config.name,
-              image: ne._config.image,
+              name: _config.name,
+              image: _config.image,
               ports: [
                 {
                   containerPort: 3000,
@@ -224,9 +223,9 @@ function(params) {
                 {
                   name: o.key,
                   [if std.isString(o.value) then "value" else "valueFrom"]: o.value 
-                } for o in std.objectKeysValues(ne._config.env)
+                } for o in std.objectKeysValues(_config.env)
               ],
-              resources: ne._config.resources,
+              resources: _config.resources,
               volumeMounts: [
                 {
                   name: "data",
