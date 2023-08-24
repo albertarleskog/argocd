@@ -1,8 +1,0 @@
-# Needed for ebpf dataplane.
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: kubernetes-services-endpoint
-data:
-  KUBERNETES_SERVICE_HOST: "100.69.69.1"
-  KUBERNETES_SERVICE_PORT: "6443"
