@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: vault
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -29,7 +31,6 @@ spec:
                 hosts:
                   - vault.arleskog.se
           dataStorage:
-            size: 4Gi
             storageClass: longhorn
         ui:
           enabled: true
