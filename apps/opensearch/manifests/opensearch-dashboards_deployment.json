@@ -17,6 +17,12 @@
       },
       "template": {
          "metadata": {
+            "annotations": {
+               "vault.hashicorp.com/agent-inject": "true",
+               "vault.hashicorp.com/agent-inject-secret-opensearch-dashboards": "kv/opensearch-dashboards",
+               "vault.hashicorp.com/agent-inject-template-opensearch-dashboards": "{{- with secret \"kv/opensearch-dashboards\" -}}\nexport OPENSEARCH__SECURITY_OPENID_CLIENT__SECRET=\"{{ .Data.data.SECURITY_OPENID_CLIENT__SECRET }}\"\n{{- end -}}\n",
+               "vault.hashicorp.com/role": "opensearch-dashboards"
+            },
             "labels": {
                "app": "opensearch-dashboards"
             },
@@ -25,16 +31,10 @@
          "spec": {
             "containers": [
                {
-                  "env": [
-                     {
-                        "name": "OPENSEARCH__SECURITY_OPENID_CLIENT__SECRET",
-                        "valueFrom": {
-                           "secretKeyRef": {
-                              "key": "client_secret",
-                              "name": "opensearch-dashboards"
-                           }
-                        }
-                     }
+                  "args": [
+                     "/bin/bash",
+                     "-c",
+                     "set -euo pipefail\nsource /vault/secrets/opensearch-dashboards\nexec ./opensearch-dashboards-docker-entrypoint.sh \"$@\"\n"
                   ],
                   "image": "docker.io/opensearchproject/opensearch-dashboards:2.9.0",
                   "name": "opensearch-dashboards",
@@ -69,7 +69,7 @@
             "securityContext": {
                "fsGroup": 1000
             },
-            "serviceAccountName": "opensearch-cluster",
+            "serviceAccountName": "opensearch-dashboards",
             "volumes": [
                {
                   "csi": {

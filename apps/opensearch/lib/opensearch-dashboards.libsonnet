@@ -130,15 +130,34 @@ function(params) {
       template: {
         metadata: {
           name: ne._config.name,
+          annotations: {
+            "vault.hashicorp.com/agent-inject": "true",
+            "vault.hashicorp.com/role": ne._config.name,
+            "vault.hashicorp.com/agent-inject-template-opensearch-dashboards": |||
+              {{- with secret "kv/opensearch-dashboards" -}}
+              export OPENSEARCH__SECURITY_OPENID_CLIENT__SECRET="{{ .Data.data.SECURITY_OPENID_CLIENT__SECRET }}"
+              {{- end -}}
+            |||,
+            "vault.hashicorp.com/agent-inject-secret-opensearch-dashboards": "kv/opensearch-dashboards"
+          },
           labels: { app: ne._config.name }
         },
         spec: {
-          serviceAccountName: "opensearch-cluster",
+          serviceAccountName: ne._config.name,
           securityContext: { fsGroup: 1000 },
           containers: [
             {
               name: ne._config.name,
               image: "docker.io/opensearchproject/opensearch-dashboards:" + ne._config.version,
+              args: [
+                "/bin/bash",
+                "-c",
+                |||
+                  set -euo pipefail
+                  source /vault/secrets/opensearch-dashboards
+                  exec ./opensearch-dashboards-docker-entrypoint.sh "$@"
+                |||
+              ],
               ports: [
                 {
                   name: "http",
@@ -149,17 +168,6 @@ function(params) {
                 requests: { cpu: "200m", memory: "512Mi" },
                 limits: { cpu: "200m", memory: "512Mi" },
               },
-              env: [
-                {
-                  name: "OPENSEARCH__SECURITY_OPENID_CLIENT__SECRET",
-                  valueFrom: {
-                    secretKeyRef: {
-                      name: ne._config.name,
-                      key: "client_secret"
-                    }
-                  }
-                }
-              ],
               volumeMounts: [
                 {
                   name: "certs",
@@ -200,6 +208,15 @@ function(params) {
           ],
         }
       }
+    }
+  },
+
+  serviceAccount: {
+    kind: "ServiceAccount",
+    apiVersion: "v1",
+    metadata: {
+        name: ne._config.name,
+        namespace: ne._config.namespace
     }
   }
 }
