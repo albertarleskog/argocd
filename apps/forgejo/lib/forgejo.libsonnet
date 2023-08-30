@@ -39,30 +39,12 @@ function(params) {
       FORGEJO__database__HOST: "postgresql.db.svc.cluster.local:5432",
       FORGEJO__database__NAME: "forgejo",
       FORGEJO__database__USER: "forgejo",
-      FORGEJO__database__PASSWD: {
-        secretKeyRef: {
-          name: _config.name,
-          key: "POSTGRES_PASSWD"
-        }
-      },
       FORGEJO__database__LOG_SQL: "false",
       FORGEJO__indexer__ISSUE_INDEXER_TYPE: "elasticsearch",
-      FORGEJO__indexer__ISSUE_INDEXER_CONN_STR: {
-        secretKeyRef: {
-          name: _config.name,
-          key: "ISSUE_INDEXER_CONN_STR"
-        }
-      },
       FORGEJO__indexer__ISSUE_INDEXER_NAME: "forgejo-issues",
       FROGEJO__indexer__REPO_INDEXER_ENABLED: "true",
       FROGEJO__indexer__REPO_INDEXER_REPO_TYPES: "sources,forks,templates",
       FORGEJO__indexer__REPO_INDEXER_TYPE: "elasticsearch",
-      FORGEJO__indexer__REPO_INDEXER_CONN_STR: {
-        secretKeyRef: {
-          name: _config.name,
-          key: "REPO_INDEXER_CONN_STR"
-        }
-      },
       FORGEJO__indexer__REPO_INDEXER_NAME: "forgejo-repos",
       FORGEJO__security__INSTALL_LOCK: "true",
       FORGEJO__security__LOGIN_REMEMBER_DAYS: "1",
@@ -185,23 +167,36 @@ function(params) {
     metadata: {
       name: _config.name,
       namespace: _config.namespace
-    },
-    spec: {
-      serviceName: _config.name,
-      replicas: 1,
-      selector: {
-        matchLabels: {
+  },
+  spec: {
+    serviceName: _config.name,
+    replicas: 1,
+    selector: {
+      matchLabels: {
           app: _config.name
         }
       },
       template: {
         metadata: {
           name: _config.name,
+          annotations: {
+            "vault.hashicorp.com/agent-inject": "true",
+            "vault.hashicorp.com/role": _config.name,
+            "vault.hashicorp.com/agent-inject-secret-forgejo": "kv/forgejo",
+            "vault.hashicorp.com/agent-inject-template-forgejo": |||
+              {{- with secret "kv/forgejo" -}}
+              export FORGEJO__database__PASSWD="{{ .Data.data.POSTGRES_PASSWD }}"
+              export FORGEJO__indexer__ISSUE_INDEXER_CONN_STR="{{ .Data.data.ISSUE_INDEXER_CONN_STR }}"
+              export FORGEJO__indexer__REPO_INDEXER_CONN_STR="{{ .Data.data.REPO_INDEXER_CONN_STR }}"
+              {{- end -}}
+            |||,
+          },
           labels: {
             app: _config.name
           }
         },
         spec: {
+          serviceAccountName: _config.name,
           terminationGracePeriodSeconds: 60,
           securityContext: {
             fsGroup: 1000
@@ -210,6 +205,15 @@ function(params) {
             {
               name: _config.name,
               image: _config.image,
+              command: [
+                "/bin/bash",
+                "-c",
+                |||
+                  set -euo pipefail
+                  source /vault/secrets/forgejo
+                  exec /usr/bin/dumb-init -- /usr/local/bin/docker-entrypoint.sh "$@"
+                |||
+              ],
               ports: [
                 {
                   containerPort: 3000,
@@ -266,6 +270,15 @@ function(params) {
           }
         }
       ]
+    }
+  },
+
+  serviceaccount: {
+    kind: "ServiceAccount",
+    apiVersion: "v1",
+    metadata: {
+      name: _config.name,
+      namespace: _config.namespace
     }
   }
 }

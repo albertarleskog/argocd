@@ -15,6 +15,12 @@
       "serviceName": "forgejo",
       "template": {
          "metadata": {
+            "annotations": {
+               "vault.hashicorp.com/agent-inject": "true",
+               "vault.hashicorp.com/agent-inject-secret-forgejo": "kv/forgejo",
+               "vault.hashicorp.com/agent-inject-template-forgejo": "{{- with secret \"kv/forgejo\" -}}\nexport FORGEJO__database__PASSWD=\"{{ .Data.data.POSTGRES_PASSWD }}\"\nexport FORGEJO__indexer__ISSUE_INDEXER_CONN_STR=\"{{ .Data.data.ISSUE_INDEXER_CONN_STR }}\"\nexport FORGEJO__indexer__REPO_INDEXER_CONN_STR=\"{{ .Data.data.REPO_INDEXER_CONN_STR }}\"\n{{- end -}}\n",
+               "vault.hashicorp.com/role": "forgejo"
+            },
             "labels": {
                "app": "forgejo"
             },
@@ -23,6 +29,11 @@
          "spec": {
             "containers": [
                {
+                  "command": [
+                     "/bin/bash",
+                     "-c",
+                     "set -euo pipefail\nsource /vault/secrets/forgejo\nexec /usr/bin/dumb-init -- /usr/local/bin/docker-entrypoint.sh \"$@\"\n"
+                  ],
                   "env": [
                      {
                         "name": "FORGEJO__DEFAULT__APP_NAME",
@@ -69,26 +80,8 @@
                         "value": "forgejo"
                      },
                      {
-                        "name": "FORGEJO__database__PASSWD",
-                        "valueFrom": {
-                           "secretKeyRef": {
-                              "key": "POSTGRES_PASSWD",
-                              "name": "forgejo"
-                           }
-                        }
-                     },
-                     {
                         "name": "FORGEJO__database__USER",
                         "value": "forgejo"
-                     },
-                     {
-                        "name": "FORGEJO__indexer__ISSUE_INDEXER_CONN_STR",
-                        "valueFrom": {
-                           "secretKeyRef": {
-                              "key": "ISSUE_INDEXER_CONN_STR",
-                              "name": "forgejo"
-                           }
-                        }
                      },
                      {
                         "name": "FORGEJO__indexer__ISSUE_INDEXER_NAME",
@@ -97,15 +90,6 @@
                      {
                         "name": "FORGEJO__indexer__ISSUE_INDEXER_TYPE",
                         "value": "elasticsearch"
-                     },
-                     {
-                        "name": "FORGEJO__indexer__REPO_INDEXER_CONN_STR",
-                        "valueFrom": {
-                           "secretKeyRef": {
-                              "key": "REPO_INDEXER_CONN_STR",
-                              "name": "forgejo"
-                           }
-                        }
                      },
                      {
                         "name": "FORGEJO__indexer__REPO_INDEXER_NAME",
@@ -300,6 +284,7 @@
             "securityContext": {
                "fsGroup": 1000
             },
+            "serviceAccountName": "forgejo",
             "terminationGracePeriodSeconds": 60
          }
       },
