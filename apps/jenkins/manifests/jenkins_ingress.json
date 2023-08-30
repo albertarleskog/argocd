@@ -10,6 +10,7 @@
       "namespace": "jenkins"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "jenkins.arleskog.se",

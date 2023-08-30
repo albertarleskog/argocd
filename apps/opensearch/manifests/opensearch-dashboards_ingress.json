@@ -10,6 +10,7 @@
       "namespace": "opensearch"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "dashboards.arleskog.se",

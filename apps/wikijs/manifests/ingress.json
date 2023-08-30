@@ -9,6 +9,7 @@
       "name": "wikijs"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "wiki.arleskog.se",

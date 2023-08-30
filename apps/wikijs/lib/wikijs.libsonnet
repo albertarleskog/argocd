@@ -34,6 +34,7 @@ function(params) {
       }
     },
     spec: {
+      ingressClassName: "nginx",
       tls: [
         {
           hosts: [

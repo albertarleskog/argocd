@@ -9,6 +9,7 @@
       "name": "forgejo"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "git.arleskog.se",

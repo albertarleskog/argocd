@@ -10,6 +10,7 @@
       "namespace": "searxng"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "search.arleskog.se",

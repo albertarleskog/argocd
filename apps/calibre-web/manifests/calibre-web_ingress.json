@@ -11,6 +11,7 @@
       "name": "calibre-web"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "calibre-web.arleskog.se",

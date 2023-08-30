@@ -9,6 +9,7 @@
       "name": "cyberchef"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "cc.arleskog.se",

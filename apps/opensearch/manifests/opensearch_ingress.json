@@ -11,6 +11,7 @@
       "namespace": "opensearch"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "opensearch.arleskog.se",

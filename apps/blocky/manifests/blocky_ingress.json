@@ -9,6 +9,7 @@
       "name": "blocky"
    },
    "spec": {
+      "ingressClassName": "nginx",
       "rules": [
          {
             "host": "dns.arleskog.se",
