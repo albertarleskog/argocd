@@ -1,6 +1,9 @@
 dependencies:
 - name: argo-cd
   repository: https://argoproj.github.io/argo-helm
-  version: 5.20.0
-digest: sha256:be0852794932c469c64f27bea1108c9291531a665a3371f903aff06d027faa62
-generated: "2023-02-07T19:09:02.160497169+01:00"
+  version: 5.41.1
+- name: cilium
+  repository: https://helm.cilium.io/
+  version: 1.14.1
+digest: sha256:f1d8e74eeeff213d65e237f0d7c31d83dd032eabfe9843dfd31cdc245360fb75
+generated: "2023-09-02T19:22:24.130436+02:00"

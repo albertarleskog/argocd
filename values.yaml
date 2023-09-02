@@ -3,5 +3,23 @@ argo-cd:
     extraArgs:
       - "--disable-auth"
       - "--insecure"
-  dex:
-    enabled: "false"
+cilium:
+  bpf:
+    masquerade: true
+  containerRuntime:
+    integration: crio
+  hubble:
+    relay:
+      enabled: true
+    ui:
+      enabled: true
+  ipam:
+    operator:
+      clusterPoolIPv4PodCIDRList: 10.69.0.0/16
+  k8sServiceHost: 100.69.69.1
+  k8sServicePort: 6443
+  kubeProxyReplacement: true
+  loadBalancer:
+    algorithm: maglev
+  nodePort:
+    enabled: true
