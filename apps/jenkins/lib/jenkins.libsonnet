@@ -57,6 +57,11 @@ function(params) {
             url: "https://jenkins.arleskog.se/"
           prometheusConfiguration:
             useAuthenticatedEndpoint: true
+          giteaServers:
+            servers:
+              - displayName: "Forgejo"
+                serverUrl: "https://git.arleskog.se"
+                manageHooks: false
       |||,
       "plugins.txt": |||
         build-timeout
@@ -66,10 +71,14 @@ function(params) {
         role-strategy
         timestamper
         ws-cleanup
-        kubernetes
         configuration-as-code
         prometheus
         cloudbees-disk-usage-simple
+        gitea
+        branch-api
+        workflow-multibranch
+        pipeline-stage-view
+        docker-plugin
       |||
     }
   },
@@ -240,8 +249,8 @@ function(params) {
               ],
               env: [{name: o.key, value: o.value} for o in std.objectKeysValues(_config.env)],
               resources: {
-                requests: { cpu: "500m", memory: "500Mi" },
-                limits: { cpu: "1000m", memory: "2Gi" },
+                requests: { cpu: "500m", memory: "512Mi" },
+                limits: { cpu: "1000m", memory: "1Gi" },
               },
               volumeMounts: [
                 {
@@ -310,47 +319,13 @@ function(params) {
     }
   },
 
-  serviceaccount: {
+  serviceAccount: {
     kind: "ServiceAccount",
     apiVersion: "v1",
     metadata: {
       name: _config.name,
       namespace: _config.namespace
     }
-  },
-
-  clusterrolebinding: {
-    kind: "ClusterRoleBinding",
-    apiVersion: "rbac.authorization.k8s.io/v1",
-    metadata: {
-      name: _config.name
-    },
-    roleRef: {
-      apiGroup: "rbac.authorization.k8s.io",
-      kind: "ClusterRole",
-      name: _config.name
-    },
-    subjects: [
-      {
-        kind: "ServiceAccount",
-        name: _config.name,
-        namespace: _config.namespace
-      }
-    ]
-  },
-
-  clusterrole: {
-    kind: "ClusterRole",
-    apiVersion: "rbac.authorization.k8s.io/v1",
-    metadata: {
-      name: _config.name
-    },
-    rules: [
-      {
-        apiGroups: ["*"],
-        resources: ["*"],
-        verbs: ["*"]
-      }
-    ]
   }
 }
+
