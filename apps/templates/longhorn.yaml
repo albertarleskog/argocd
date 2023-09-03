@@ -13,6 +13,9 @@ spec:
     chart: longhorn
     helm:
       values: |
+        persistence:
+          defaultDataLocality: best-effort
+          reclaimPolicy: Retain
         defaultSettings:
           backupTarget: "s3://longhorn-private@s3.us-east-005.backblazeb2.com/"
           backupTargetCredentialSecret: backblaze
