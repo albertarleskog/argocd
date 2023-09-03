@@ -13,8 +13,7 @@ spec:
     chart: minio
     helm:
       values: |
-        replicas: 1
-        mode: standalone
+        replicas: 3
         persistence:
           storageClass: "longhorn"
           size: 8Gi
