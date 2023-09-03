@@ -54,7 +54,7 @@ function(params) {
       FORGEJO__oauth2_client__UPDATE_AVATAR: "true",
       FORGEJO__oauth2_client__ACCOUNT_LINKING: "auto",
       FORGEJO__service__DISABLE_REGISTRATION: "true",
-      FORGEJO__service__REQUIRE_SIGNIN_VIEW: "true",
+      FORGEJO__service__REQUIRE_SIGNIN_VIEW: "false",
       FORGEJO__service__ENABLE_TIMETRACKING: "false",
       FORGEJO__service__AUTO_WATCH_ON_CHANGES: "true",
       FORGEJO__service__VALID_SITE_URL_SCHEMES: "https",

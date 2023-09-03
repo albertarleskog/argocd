@@ -205,7 +205,7 @@
                      },
                      {
                         "name": "FORGEJO__service__REQUIRE_SIGNIN_VIEW",
-                        "value": "true"
+                        "value": "false"
                      },
                      {
                         "name": "FORGEJO__service__VALID_SITE_URL_SCHEMES",
