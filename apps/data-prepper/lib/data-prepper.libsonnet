@@ -50,6 +50,25 @@ function(params) {
               username: data-prepper
               password: {{ .Data.data.password }}
               index_type: trace-analytics-service-map
+      nginx-logs-pipeline:
+        source:
+          http:
+            ssl: false
+            authentication:
+              unauthenticated:
+            port: 2021
+        processor:
+          - grok:
+              match:
+                log: 
+                  - '^%{IPORHOST:remote_ip} - %{DATA:remote_user} \[%{HTTPDATE:access_time}\] \"%{WORD:http_method} %{DATA:http_path} HTTP/%{NUMBER:http_version}\" %{NUMBER:status} %{NUMBER:body_bytes_sent} \"%{URI:http_referer}\" \"%{DATA:user_agent}\" %{NUMBER:request_length} %{NUMBER:request_length} \[%{DATA:proxy_upstream_name}\] \[%{DATA:proxy_alternative_upstream_name}\] %{HOSTPORT:upstream_addr} %{NUMBER:upstream_response_length} %{NUMBER:upstream_resonse_time} %{NUMBER:upstream_status} %{DATA:req_id}$'
+        sink:
+          - opensearch:
+              hosts: ["https://opensearch-cluster-headless.opensearch.svc.cluster.local:9200"]
+              cert: "/usr/share/data-prepper/ca.pem"
+              username: "data-prepper"
+              password: {{ .Data.data.password }}
+              index: ingress-nginx-logs
       {{- end -}}
     |||
   },
