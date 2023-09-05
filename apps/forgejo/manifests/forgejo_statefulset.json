@@ -92,8 +92,16 @@
                         "value": "elasticsearch"
                      },
                      {
+                        "name": "FORGEJO__indexer__REPO_INDEXER_ENABLED",
+                        "value": "true"
+                     },
+                     {
                         "name": "FORGEJO__indexer__REPO_INDEXER_NAME",
-                        "value": "forgejo-repos"
+                        "value": "forgejo-codes"
+                     },
+                     {
+                        "name": "FORGEJO__indexer__REPO_INDEXER_REPO_TYPES",
+                        "value": "sources,forks,templates"
                      },
                      {
                         "name": "FORGEJO__indexer__REPO_INDEXER_TYPE",
@@ -129,7 +137,7 @@
                      },
                      {
                         "name": "FORGEJO__repository__DEFAULT_REPO_UNITS",
-                        "value": "repo.code,repo.releases"
+                        "value": "repo.code,repo.releases,repo.issues,repo.pulls"
                      },
                      {
                         "name": "FORGEJO__repository__ROOT",
@@ -222,14 +230,6 @@
                      {
                         "name": "FORGEJO__session__PROVIDER",
                         "value": "db"
-                     },
-                     {
-                        "name": "FROGEJO__indexer__REPO_INDEXER_ENABLED",
-                        "value": "true"
-                     },
-                     {
-                        "name": "FROGEJO__indexer__REPO_INDEXER_REPO_TYPES",
-                        "value": "sources,forks,templates"
                      },
                      {
                         "name": "USER_GID",
