@@ -4,8 +4,8 @@ local defaults = {
   image: error "please provide image",
   replicas: error "please provide replicas",
   resources: {
-    requests: { cpu: "100m", memory: "256Mi" },
-    limits: { cpu: "100m", memory: "256Mi" }
+    requests: { cpu: "100m", memory: "512Mi" },
+    limits: { cpu: "100m", memory: "512Mi" }
   }
 };
 
