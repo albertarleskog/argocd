@@ -193,8 +193,10 @@ function(params) {
           tls: 853
         upstream:
           default:
-            - https://dns.quad9.net/dns-query
-            - tcp-tls:dns.quad9.net
+            - tcp-tls:r4t7m0942c.cloudflare-gateway.com
+            - https://r4t7m0942c.cloudflare-gateway.com/dns-query
+            #- https://dns.quad9.net/dns-query
+            #- tcp-tls:dns.quad9.net
         bootstrapDns:
           - tcp+udp:9.9.9.9
         blocking:
