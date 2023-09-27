@@ -196,6 +196,10 @@
                         "value": "true"
                      },
                      {
+                        "name": "FORGEJO__service_0X2E_explore__REQUIRE_SIGNIN_VIEW",
+                        "value": "true"
+                     },
+                     {
                         "name": "FORGEJO__service__AUTO_WATCH_ON_CHANGES",
                         "value": "true"
                      },

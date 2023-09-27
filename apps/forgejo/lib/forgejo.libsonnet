@@ -59,6 +59,7 @@ function(params) {
       FORGEJO__service__AUTO_WATCH_ON_CHANGES: "true",
       FORGEJO__service__VALID_SITE_URL_SCHEMES: "https",
       FORGEJO__service__ENABLE_BASIC_AUTHENTICATION: "false",
+      FORGEJO__service_0X2E_explore__REQUIRE_SIGNIN_VIEW: "true",
       FORGEJO__session__PROVIDER: "db",
       FORGEJO__session__COOKIE_SECURE: "true",
       FORGEJO__session__DOMAIN: "git.arleskog.se",
