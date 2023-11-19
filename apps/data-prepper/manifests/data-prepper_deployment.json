@@ -48,7 +48,7 @@
             },
             "containers": [
                {
-                  "image": "docker.io/opensearchproject/data-prepper:2",
+                  "image": "docker.io/opensearchproject/data-prepper:2.5.0",
                   "name": "data-prepper",
                   "ports": [
                      {

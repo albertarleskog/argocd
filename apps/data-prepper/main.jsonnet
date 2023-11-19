@@ -3,7 +3,7 @@ local dataPrepper = import './lib/data-prepper.libsonnet';
 local values = {
   name: "data-prepper",
   namespace: "data-prepper",
-  image: "docker.io/opensearchproject/data-prepper:2",
+  image: "docker.io/opensearchproject/data-prepper:2.5.0",
   replicas: 1
 };
 
