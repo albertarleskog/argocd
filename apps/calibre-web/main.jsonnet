@@ -5,7 +5,7 @@ local values = {
   namespace: "calibre-web",
   subdomain: "calibre-web",
   domain: "arleskog.se",
-  image: "lscr.io/linuxserver/calibre-web:latest",
+  image: "lscr.io/linuxserver/calibre-web:0.6.21-ls240",
   replicas: 1
 };
 
