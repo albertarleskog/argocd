@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://charts.longhorn.io
-    targetRevision: 1.4.4
+    targetRevision: 1.5.3
     chart: longhorn
     helm:
       values: |
@@ -24,8 +24,8 @@ spec:
           defaultDataLocality: best-effort
           orphanAutoDeletion: true
           snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: true
-          guaranteedEngineManagerCPU: 6
-          guaranteedReplicaManagerCPU: 6
+          guaranteedInstanceManagerCPU: 6
+          concurrentAutomaticEngineUpgradePerNodeLimit: 1
   destination:
     namespace: longhorn-system
     server: {{ .Values.spec.destination.server }}
