@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://kubernetes.github.io/ingress-nginx
-    targetRevision: 4.7.1
+    targetRevision: 4.8.3
     chart: ingress-nginx
     helm:
       values: |
@@ -44,3 +44,4 @@ spec:
       prune: true
     syncOptions:
       - CreateNamespace=true
+
