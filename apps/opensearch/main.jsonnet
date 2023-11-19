@@ -3,7 +3,7 @@ local opensearchDashboards = import './lib/opensearch-dashboards.libsonnet';
 
 local values = {
   defaults: {
-    version: "2.9.0",
+    version: "2.11.0",
     namespace: "opensearch",
     domain: "arleskog.se"
   },
