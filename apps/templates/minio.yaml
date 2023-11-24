@@ -8,42 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://charts.min.io/
-    targetRevision: 5.0.13
-    chart: minio
-    helm:
-      values: |
-        replicas: 3
-        persistence:
-          storageClass: "longhorn"
-          size: 8Gi
-        ingress:
-          enabled: true
-          ingressClassName: "nginx"
-          annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-prod"
-            external-dns.alpha.kubernetes.io/hostname: "s3.arleskog.se"
-          hosts:
-            - s3.arleskog.se
-          tls:
-            - secretName: s3-arleskog-se-cert
-              hosts:
-                - s3.arleskog.se
-        consoleIngress:
-          enabled: true
-          ingressClassName: "nginx"
-          annotations:
-            cert-manager.io/cluster-issuer: "letsencrypt-prod"
-            external-dns.alpha.kubernetes.io/hostname: "console.s3.arleskog.se"
-          hosts:
-            - console.s3.arleskog.se
-          tls:
-            - secretName: console-s3-arleskog-se-cert
-              hosts:
-                - console.s3.arleskog.se
-        resources:
-          requests:
-            memory: 256Mi
+    repoURL: {{ .Values.spec.source.repoURL }}
+    path: apps/minio
+    targetRevision: HEAD
   destination:
     namespace: minio
     server: {{ .Values.spec.destination.server }}
@@ -52,3 +19,4 @@ spec:
       prune: true
     syncOptions:
       - CreateNamespace=true
+

@@ -1,0 +1,79 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-external
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    external-dns.alpha.kubernetes.io/hostname: s3.arleskog.se,console.s3.arleskog.se
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: s3.arleskog.se
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: minio-external
+                port:
+                  name: http
+    - host: console.s3.arleskog.se
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: minio-external
+                port:
+                  name: console
+  tls:
+    - hosts:
+      - s3.arleskog.se
+      secretName: s3-arleskog-se-cert
+    - hosts:
+      - console.s3.arleskog.se
+      secretName: console-s3-arleskog-se-cert
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-external
+  namespace: minio
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+    - name: console
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+  clusterIP: None
+  type: ClusterIP
+
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: minio-external
+  namespace: minio
+  labels:
+    kubernetes.io/service-name: minio-external
+addressType: IPv4
+ports:
+  - name: http
+    appProtocol: http
+    protocol: TCP
+    port: 9000
+  - name: console
+    appProtocol: http
+    protocol: TCP
+    port: 9001
+endpoints:
+  - addresses:
+      - "10.1.40.100"
+
