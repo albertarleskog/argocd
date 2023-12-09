@@ -17,7 +17,7 @@ spec:
           defaultDataLocality: best-effort
           reclaimPolicy: Retain
         defaultSettings:
-          backupTarget: "s3://longhorn-private@s3.us-east-005.backblazeb2.com/"
+          backupTarget: "s3://0de979bf-e7f8-43f9-bd7b-d6a697483c6d@s3.eu-central-003.backblazeb2.com/"
           backupTargetCredentialSecret: backblaze
           backupstorePollInterval: 0
           replicaAutoBalance: best-effort
