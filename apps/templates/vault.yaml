@@ -19,6 +19,36 @@ spec:
             enabled: true
             raft:
               enabled: true
+              config: |
+                ui = true
+
+                listener "tcp" {
+                  tls_disable = 1
+                  address = "[::]:8200"
+                  cluster_address = "[::]:8201"
+                  # Enable unauthenticated metrics access (necessary for Prometheus Operator)
+                  #telemetry {
+                  #  unauthenticated_metrics_access = "true"
+                  #}
+                }
+
+                storage "raft" {
+                  path = "/vault/data"
+                }
+
+                service_registration "kubernetes" {}
+
+                seal "transit" {
+                  address = "http://vault-kms-active.vault-kms.svc.cluster.local:8200"
+                  disable_renewal = "false"
+                  key_name = "autounseal"
+                  mount_path = "transit/"
+                  tls_skip_verify = "true"
+                }
+          extraSecretEnvironmentVars:
+            - envName: VAULT_TOKEN
+              secretName: vault
+              secretKey: VAULT_TOKEN
           ingress:
             ingressClassName: nginx
             enabled: true
