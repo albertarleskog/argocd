@@ -2,7 +2,7 @@ local forgejo = import './lib/forgejo.libsonnet';
 
 local values = {
   defaults: {
-    image: "codeberg.org/forgejo/forgejo:1.20.5-0-rootless",
+    image: "codeberg.org/forgejo/forgejo:1.21.2-0-rootless",
     namespace: "forgejo",
     subdomain: "git",
     domain: "arleskog.se"
