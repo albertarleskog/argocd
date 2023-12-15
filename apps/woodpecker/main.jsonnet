@@ -2,7 +2,7 @@ local woodpecker = import './lib/woodpecker.libsonnet';
 
 local values = {
   defaults: {
-    image: "docker.io/woodpeckerci/woodpecker-server:v1.0",
+    image: "docker.io/woodpeckerci/woodpecker-server:v2.0",
     namespace: "woodpecker",
     subdomain: "woodpecker",
     domain: "arleskog.se"
