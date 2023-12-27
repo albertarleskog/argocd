@@ -102,7 +102,7 @@
                         "value": "albert"
                      }
                   ],
-                  "image": "docker.io/woodpeckerci/woodpecker-server:v2.0",
+                  "image": "docker.io/woodpeckerci/woodpecker-server:v2.1.0",
                   "livenessProbe": {
                      "httpGet": {
                         "path": "/healthz",
