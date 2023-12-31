@@ -14,7 +14,7 @@
          },
          {
             "name": "grpc",
-            "port": 90,
+            "port": 9000,
             "targetPort": "grpc"
          }
       ],

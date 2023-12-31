@@ -87,11 +87,11 @@
                      },
                      {
                         "name": "WOODPECKER_LOG_LEVEL",
-                        "value": "info"
+                        "value": "warn"
                      },
                      {
                         "name": "WOODPECKER_METRICS_SERVER_ADDR",
-                        "value": ":9000"
+                        "value": ":9001"
                      },
                      {
                         "name": "WOODPECKER_PROMETHEUS_AUTH_TOKEN_FILE",
@@ -138,11 +138,7 @@
                   }
                }
             ],
-            "securityContext": {
-               "runAsGroup": 1337,
-               "runAsNonRoot": true,
-               "runAsUser": 1337
-            },
+            "hostUsers": false,
             "serviceAccountName": "woodpecker"
          }
       }

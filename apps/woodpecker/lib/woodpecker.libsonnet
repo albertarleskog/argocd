@@ -1,5 +1,5 @@
 local defaults = {
-  name: "please provide deployment name, \"forgejo\" is suggested",
+  name: "please provide deployment name",
   namespace: error 'please provide namespace',
   image: error "please provide image",
   subdomain: error "please provide subdomain name",
@@ -16,8 +16,8 @@ function(params) {
   local _config = defaults + params + {
     env: {
       WOODPECKER_HOST: "https://woodpecker.arleskog.se",
-      WOODPECKER_LOG_LEVEL: "info",
-      WOODPECKER_METRICS_SERVER_ADDR: ":9000",
+      WOODPECKER_LOG_LEVEL: "warn",
+      WOODPECKER_METRICS_SERVER_ADDR: ":9001",
       WOODPECKER_ADMIN: "albert",
       WOODPECKER_REPO_OWNERS: "albert",
       WOODPECKER_AGENT_SECRET_FILE: "/vault/secrets/agent_secret",
@@ -146,7 +146,7 @@ function(params) {
         },
         {
           name: "grpc",
-          port: 90,
+          port: 9000,
           targetPort: "grpc"
         }
       ]
@@ -197,12 +197,8 @@ function(params) {
           }
         },
         spec: {
+          hostUsers: false,
           serviceAccountName: _config.name,
-          securityContext: {
-            runAsNonRoot: true,
-            runAsUser: 1337,
-            runAsGroup: 1337
-          },
           containers: [
             {
               name: _config.name,
@@ -252,3 +248,4 @@ function(params) {
     }
   }
 }
+
