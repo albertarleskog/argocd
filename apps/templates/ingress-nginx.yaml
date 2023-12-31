@@ -14,8 +14,6 @@ spec:
     helm:
       values: |
         controller:
-          opentelemetry:
-            enabled: true
           nodeSelector:
             kubernetes.io/hostname: hetzner-fsn1-cax21-0.arleskog.se
           ingressClassResource:
@@ -30,12 +28,6 @@ spec:
             enable-real-ip: true
             proxy-buffer-size: "16k"
             proxy-buffers-number: 8
-            enable-opentelemetry: true
-            otlp-collector-host: "data-prepper.data-prepper.svc.cluster.local"
-            otlp-collector-port: 21890
-            otel-service-name: "ingress-nginx"
-            opentelemetry-trust-incoming-span: false
-            opentelemetry-operation-name: "HTTP $request_method $service_name $uri"
   destination:
     namespace: ingress-nginx
     server: {{ .Values.spec.destination.server }}
