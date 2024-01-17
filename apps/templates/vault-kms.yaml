@@ -14,6 +14,15 @@ spec:
     helm:
       values: |
         server:
+          affinity: |
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                            - hetzner-fsn1-cax21-0.arleskog.se
           ha:
             replicas: 1
             enabled: true
