@@ -2,7 +2,7 @@ local blocky = import './lib/blocky.libsonnet';
 
 local values = {
   defaults: {
-    image: "spx01/blocky:latest",
+    image: "spx01/blocky:v0.23",
     namespace: "blocky",
     subdomain: "dns",
     domain: "arleskog.se",
@@ -18,3 +18,4 @@ local root = {
 };
 
 { ["blocky_%s.json" % name]: root.blocky[name] for name in std.objectFields(root.blocky) }
+

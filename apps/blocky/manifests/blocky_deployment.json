@@ -55,7 +55,7 @@
                         "value": "1000"
                      }
                   ],
-                  "image": "spx01/blocky:latest",
+                  "image": "spx01/blocky:v0.23",
                   "livenessProbe": {
                      "failureThreshold": 5,
                      "httpGet": {
@@ -94,6 +94,10 @@
                         "mountPath": "/app/config.yml",
                         "name": "config",
                         "subPath": "config.yml"
+                     },
+                     {
+                        "mountPath": "/certs",
+                        "name": "certs"
                      }
                   ]
                }
@@ -105,6 +109,12 @@
                      "name": "blocky"
                   },
                   "name": "config"
+               },
+               {
+                  "name": "certs",
+                  "secret": {
+                     "secretName": "dns-arleskog-se-cert"
+                  }
                }
             ]
          }

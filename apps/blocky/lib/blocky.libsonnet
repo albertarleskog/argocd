@@ -18,7 +18,8 @@ function(params) {
     env: {
       TZ: "Europe/Stockholm",
       USER_GID: "1000",
-    }
+    },
+    certSecret: std.strReplace(ne._config.fqdn, ".", "-") + "-cert"
   },
 
   ingress: {
@@ -38,7 +39,7 @@ function(params) {
           hosts: [
             ne._config.fqdn
           ],
-          secretName: std.strReplace(ne._config.fqdn, ".", "-") + "-cert"
+          secretName: ne._config.certSecret
         }
       ],
       rules: [
@@ -139,6 +140,10 @@ function(params) {
                   mountPath: "/app/config.yml",
                   subPath: "config.yml"
                 },
+                {
+                  name: "certs",
+                  mountPath: "/certs"
+                }
               ],
               livenessProbe: {
                 httpGet: {
@@ -154,6 +159,12 @@ function(params) {
             {
               name: "config",
               configMap: { name: ne._config.name }
+            },
+            {
+              name: "certs",
+              secret: {
+                secretName: ne._config.certSecret
+              }
             }
           ],
           affinity: {
@@ -217,3 +228,4 @@ function(params) {
     }
   }
 }
+
