@@ -127,7 +127,7 @@ function(params) {
               volumeMounts: [
                 {
                   name: "data",
-                  mountPath: "/data"
+                  mountPath: "/app/data"
                 },
               ],
               livenessProbe: {

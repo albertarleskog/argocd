@@ -84,7 +84,7 @@
                   },
                   "volumeMounts": [
                      {
-                        "mountPath": "/data",
+                        "mountPath": "/app/data",
                         "name": "data"
                      }
                   ]
